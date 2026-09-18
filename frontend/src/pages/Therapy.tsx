@@ -33,10 +33,10 @@ export function Therapy() {
   }
 
   return (
-    <div className="bg-background text-on-surface md:overflow-hidden">
+    <div className="bg-background text-on-surface">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="lg:ml-64 pt-16 pb-24 md:pb-0 flex flex-col md:h-screen">
+      <main className="lg:ml-64 pt-16 pb-24 md:pb-8 flex flex-col">
         {/* Situation Summary Header */}
         <header className="px-4 py-4 md:px-12 md:py-8">
           <div className="max-w-4xl mx-auto">
@@ -47,13 +47,14 @@ export function Therapy() {
               <span className="text-xs text-on-surface-variant italic">This session only</span>
             </div>
             <div className="bg-surface-container-low rounded-2xl px-5 py-3 md:p-8 flex flex-col md:flex-row gap-6 items-start">
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h1 className="text-xl md:text-3xl font-headline font-bold text-on-surface tracking-tight md:mb-3">
                   The Sanctuary
                 </h1>
                 <p className="hidden md:block text-on-surface-variant text-sm md:text-base leading-relaxed max-w-2xl">
-                  A non-judgmental space to process your feelings, build a safety plan, and find
-                  immediate emotional groundedness.
+                  A non-judgmental space for women navigating fear, isolation, or an unsafe
+                  situation to process their feelings, build a safety plan, and find immediate
+                  emotional groundedness.
                 </p>
               </div>
               <div className="hidden md:block w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0">
@@ -68,10 +69,10 @@ export function Therapy() {
         </header>
 
         {/* Chat & Exercise Section */}
-        <section className="flex-1 px-4 md:px-12 pb-6 md:overflow-hidden">
-          <div className="max-w-4xl mx-auto h-full grid grid-cols-1 md:grid-cols-12 gap-6">
+        <section className="flex-1 px-4 md:px-12 pb-6">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
             {/* Chat Window */}
-            <div className="md:col-span-8 h-[calc(100dvh-13.5rem)] min-h-[20rem] md:h-auto md:min-h-0 bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden">
+            <div className="md:col-span-8 min-h-[32rem] bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden">
               <div
                 ref={scrollRef}
                 role="log"
@@ -177,7 +178,7 @@ export function Therapy() {
                     onClick={send}
                     disabled={isLoading || !input.trim()}
                     aria-label="Send message"
-                    className="absolute right-2 p-3 bg-primary text-on-primary rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
+                    className="absolute right-2 w-11 h-11 shrink-0 aspect-square flex items-center justify-center bg-primary text-on-primary rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
                   >
                     <Icon name="arrow_upward" className="text-lg" />
                   </button>
@@ -211,7 +212,7 @@ export function Therapy() {
                 </ul>
               </div>
 
-              <div className="flex-1 bg-surface-container-high rounded-3xl overflow-hidden relative group min-h-[160px]">
+              <div className="h-56 bg-surface-container-high rounded-3xl overflow-hidden relative group">
                 <img
                   alt=""
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

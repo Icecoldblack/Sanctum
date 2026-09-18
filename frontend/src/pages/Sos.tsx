@@ -119,9 +119,9 @@ export function Sos() {
             Steganography <span className="text-primary">Messenger</span>
           </h1>
           <p className="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
-            Securely transmit a distress signal hidden within a mundane image. Your message is
-            encrypted and embedded into the pixels of a carrier file, making it invisible to the
-            casual observer.
+            Securely transmit a distress signal hidden within a mundane image, so a woman being
+            watched can still reach someone who can help. Your message is encrypted and embedded
+            into the pixels of a carrier file, making it invisible to the casual observer.
           </p>
         </header>
 

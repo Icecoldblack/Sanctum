@@ -63,8 +63,9 @@ export function Privacy() {
             What we keep, and what we never see
           </h1>
           <p className="text-lg leading-relaxed text-on-surface-variant">
-            Plain language, because a privacy policy you cannot read is not a promise. If anything
-            here is unclear, assume the safest interpretation and act accordingly.
+            Plain language, because a privacy policy you cannot read is not a promise. Sanctum
+            exists for women who feel unsafe and can't simply walk away, so if anything here is
+            unclear, assume the safest interpretation and act accordingly.
           </p>
         </header>
 

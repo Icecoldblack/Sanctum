@@ -19,8 +19,8 @@ export function Footer({ onIncognitoTips }: FooterProps) {
         <div className="max-w-sm">
           <div className="text-2xl font-bold tracking-tighter text-[#4c6557] mb-4">Sanctum</div>
           <p className="text-sm leading-relaxed">
-            Designed with care for survivors, by survivors and experts. We believe technology
-            should protect, not track.
+            Designed with care for women who feel unsafe and can't simply leave, by survivors and
+            experts. We believe technology should protect, not track.
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-12">

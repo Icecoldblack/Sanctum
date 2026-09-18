@@ -35,8 +35,10 @@ export function Home() {
                 <span className="text-primary italic">your own.</span>
               </h1>
               <p className="text-lg text-on-surface-variant mb-10 max-w-lg leading-relaxed">
-                Sanctum provides an ephemeral sanctuary. No accounts, no digital trails, just the
-                support you need when you need it most.
+                Sanctum is a mental health and safety space for women who feel unsafe but can't
+                simply leave. It's built for the reality that asking for help can be the most
+                dangerous moment. No accounts, no digital trails, just support when you need it
+                most.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -65,7 +67,8 @@ export function Home() {
                   <h2 className="text-3xl font-bold text-primary mb-4">Total Privacy, Guaranteed</h2>
                   <p className="text-on-surface-variant max-w-md text-lg leading-relaxed">
                     Every session is completely isolated. When you leave, we forget. No cookies, no
-                    history, no tracking.
+                    history, no tracking. For a woman living under surveillance, being seen using
+                    this at all can carry its own risk.
                   </p>
                 </div>
                 <div className="mt-12 flex items-center gap-6 z-10">
@@ -97,9 +100,14 @@ export function Home() {
         <section id="toolkit" className="max-w-screen-xl mx-auto px-6 mb-32">
           <div className="mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight text-on-surface text-center">
-              Your Supportive Toolkit
+              Built for Women Who Feel Trapped
             </h2>
-            <div className="w-20 h-1 bg-primary mx-auto mt-4 rounded-full" />
+            <p className="text-on-surface-variant text-center max-w-2xl mx-auto mt-4 leading-relaxed">
+              Millions of women in the U.S. live with the anxiety of feeling unsafe at home,
+              online, or in a relationship, and too often, going somewhere or asking someone is
+              exactly what isn't safe to do. This toolkit meets you where you already are.
+            </p>
+            <div className="w-20 h-1 bg-primary mx-auto mt-6 rounded-full" />
           </div>
           <div className="space-y-12">
             {/* Tool 1: SOS Messenger */}
@@ -115,8 +123,8 @@ export function Home() {
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed mb-6">
                     Safety in plain sight. Our messenger uses steganography to hide your messages
-                    inside ordinary photos, allowing you to reach for help without alerting anyone
-                    nearby.
+                    inside ordinary photos, so you can reach for help without alerting a partner,
+                    family member, or anyone else watching your phone.
                   </p>
                   <Link
                     to="/sos"
@@ -150,8 +158,10 @@ export function Home() {
                     The Sanctuary
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed mb-6">
-                    AI-driven crisis counseling available 24/7. A non-judgmental space to process
-                    your feelings, build a safety plan, and find immediate emotional groundedness.
+                    AI-driven mental health support, available 24/7. A non-judgmental space for
+                    women carrying the anxiety, fear, or isolation of an unsafe situation to
+                    process their feelings, build a safety plan, and find immediate emotional
+                    groundedness.
                   </p>
                   <Link
                     to="/therapy"
@@ -183,8 +193,8 @@ export function Home() {
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed mb-6">
                     Complex legal systems simplified. Find local resources, understand your rights,
-                    and get step-by-step guidance for restraining orders and legal aid in your
-                    jurisdiction.
+                    and get step-by-step guidance for restraining orders, custody questions, and
+                    legal aid in your jurisdiction.
                   </p>
                   <Link
                     to="/legal"
