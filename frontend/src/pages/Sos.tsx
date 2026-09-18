@@ -1,0 +1,193 @@
+import { useState } from 'react'
+import { Navbar } from '@/components/layout/Navbar'
+import { Sidebar } from '@/components/layout/Sidebar'
+import { BottomNav } from '@/components/layout/BottomNav'
+import { Icon } from '@/components/shared/Icon'
+import { MessageComposer } from '@/components/sos/MessageComposer'
+import { CarrierPicker } from '@/components/sos/CarrierPicker'
+import { EncodeResult } from '@/components/sos/EncodeResult'
+import type { Carrier } from '@/components/sos/carriers'
+import { expandMessage, encodeMessage } from '@/api/sos'
+import { useSession } from '@/hooks/useSession'
+
+// Encoded pixels store data losslessly at roughly 1 bit per color channel byte;
+// this is a conservative estimate so users get a capacity warning before the request.
+const APPROX_CAPACITY_CHARS = 500
+
+export function Sos() {
+  const { session } = useSession()
+
+  const [shortInput, setShortInput] = useState('')
+  const [expandedMessage, setExpandedMessage] = useState('')
+  const [isExpanding, setIsExpanding] = useState(false)
+  const [expandError, setExpandError] = useState<string | null>(null)
+
+  const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null)
+  const [isEncoding, setIsEncoding] = useState(false)
+  const [encodeError, setEncodeError] = useState<string | null>(null)
+  const [result, setResult] = useState<{ imageUrl: string; byteSize: number } | null>(null)
+
+  const finalMessage = expandedMessage || shortInput
+  const overCapacity = finalMessage.length > APPROX_CAPACITY_CHARS
+
+  async function handleExpand() {
+    if (!session || !shortInput.trim()) return
+    setIsExpanding(true)
+    setExpandError(null)
+    try {
+      const { expandedMessage: expanded } = await expandMessage(session.sessionId, shortInput)
+      setExpandedMessage(expanded)
+    } catch {
+      setExpandError('AI expansion failed.')
+    } finally {
+      setIsExpanding(false)
+    }
+  }
+
+  async function handleEncode() {
+    if (!session || !selectedCarrier || !finalMessage.trim()) return
+    setIsEncoding(true)
+    setEncodeError(null)
+    try {
+      const imageResponse = await fetch(selectedCarrier.src)
+      const imageBlob = await imageResponse.blob()
+      const encoded = await encodeMessage(session.sessionId, finalMessage, imageBlob)
+      setResult({ imageUrl: encoded.imageUrl, byteSize: encoded.byteSize })
+    } catch {
+      setEncodeError('Could not encode your message. Nothing was sent or saved — try again.')
+    } finally {
+      setIsEncoding(false)
+    }
+  }
+
+  const canEncode = Boolean(finalMessage.trim()) && Boolean(selectedCarrier) && !overCapacity
+
+  return (
+    <>
+      <Navbar />
+      <Sidebar />
+      <main className="pt-24 pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto">
+        <header className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tighter mb-4 font-headline">
+            Steganography <span className="text-primary">Messenger</span>
+          </h1>
+          <p className="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
+            Securely transmit a distress signal hidden within a mundane image. Your message is
+            encrypted and embedded into the pixels of a carrier file, making it invisible to the
+            casual observer.
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column */}
+          <div className="lg:col-span-7 space-y-8">
+            <MessageComposer
+              shortInput={shortInput}
+              onShortInputChange={setShortInput}
+              expandedMessage={expandedMessage}
+              onExpand={handleExpand}
+              isExpanding={isExpanding}
+              expandError={expandError}
+            />
+          </div>
+
+          {/* Right Column */}
+          <div className="lg:col-span-5 space-y-8">
+            <section className="bg-surface-container-low rounded-3xl p-8 shadow-sm border border-outline-variant/10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-tertiary">
+                  <Icon name="image" />
+                </div>
+                <h3 className="text-xl font-bold text-on-surface font-headline">3. Carrier Image</h3>
+              </div>
+
+              <CarrierPicker selectedId={selectedCarrier?.id ?? null} onSelect={setSelectedCarrier} />
+
+              <p className="text-xs text-on-surface-variant/70 mb-8 italic">
+                Selecting a nature-themed image is recommended for maximum discretion.
+              </p>
+
+              {overCapacity && (
+                <p role="alert" className="mb-4 text-xs font-medium text-error">
+                  Your message is too long to hide reliably in this image. Shorten it before
+                  sending.
+                </p>
+              )}
+
+              {encodeError && (
+                <p role="alert" className="mb-4 text-xs font-medium text-error">
+                  {encodeError}
+                </p>
+              )}
+
+              {result ? (
+                <EncodeResult imageUrl={result.imageUrl} byteSize={result.byteSize} />
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleEncode}
+                  disabled={!canEncode || isEncoding}
+                  className="w-full bg-primary text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-3 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow disabled:opacity-40"
+                >
+                  <Icon name="download_for_offline" />
+                  {isEncoding ? 'Encoding…' : 'Download Secure Image'}
+                </button>
+              )}
+              {!result && (
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold text-primary tracking-widest uppercase">
+                    Encryption Ready
+                  </span>
+                </div>
+              )}
+            </section>
+
+            <div className="bg-secondary-container/30 rounded-3xl p-6 border border-secondary-container">
+              <h4 className="font-bold text-secondary mb-2 flex items-center gap-2">
+                <Icon name="verified_user" className="text-sm" />
+                How it works
+              </h4>
+              <p className="text-sm text-on-secondary-container leading-relaxed">
+                This image will look completely normal. To reveal the message, the recipient must
+                upload it back to Sanctum's secure portal. It leaves no trace in your sent
+                messages folder if deleted from your device.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Safety Footer Tips */}
+        <footer className="mt-20 border-t border-surface-container-high pt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col gap-3">
+              <Icon name="security" className="text-primary" />
+              <h5 className="font-bold">Zero-Knowledge</h5>
+              <p className="text-sm text-on-surface-variant">
+                We never store your original messages. Once the image is generated, the raw text
+                is purged from our servers.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Icon name="visibility_off" className="text-primary" />
+              <h5 className="font-bold">Incognito Mode</h5>
+              <p className="text-sm text-on-surface-variant">
+                Your browser history is automatically cleared of all session data once you click
+                'Quick Exit'.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Icon name="history" className="text-primary" />
+              <h5 className="font-bold">Timed Cleanup</h5>
+              <p className="text-sm text-on-surface-variant">
+                Sessions expire after 10 minutes of inactivity to ensure your data remains
+                protected.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </main>
+      <BottomNav />
+    </>
+  )
+}
