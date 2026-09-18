@@ -100,7 +100,7 @@ export function Home() {
         <section id="toolkit" className="max-w-screen-xl mx-auto px-6 mb-32">
           <div className="mb-16">
             <h2 className="text-4xl font-extrabold tracking-tight text-on-surface text-center">
-              Built for Women Who Feel Trapped
+              Felling Trapped?
             </h2>
             <p className="text-on-surface-variant text-center max-w-2xl mx-auto mt-4 leading-relaxed">
               Millions of women in the U.S. live with the anxiety of feeling unsafe at home,
