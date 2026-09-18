@@ -1,0 +1,10 @@
+# Internal tooling / planning docs — not for the repo
+.claude/
+SANCTUM_FRONTEND_PLAN.md
+
+# Node / Vite (for the upcoming frontend/ app)
+node_modules/
+dist/
+.env
+.env.local
+*.local
