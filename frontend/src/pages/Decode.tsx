@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
+import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { Icon } from '@/components/shared/Icon'
 import { Button } from '@/components/shared/Button'
@@ -43,7 +44,8 @@ export function Decode() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-24 pb-12 px-6 max-w-4xl mx-auto w-full">
+      <Sidebar helpVariant="card" />
+      <main className="flex-grow pt-24 pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
         <header className="mb-12 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
             SOS Decoder
@@ -99,8 +101,8 @@ export function Decode() {
               <div>
                 <h4 className="font-bold text-on-tertiary-container text-sm">Privacy Guaranteed</h4>
                 <p className="text-xs text-on-tertiary-container leading-relaxed mt-1">
-                  Decoding happens entirely in your browser. No image data is ever uploaded to our
-                  servers.
+                  Your image is decoded in memory and discarded immediately. Nothing is stored, and
+                  no account or session is required.
                 </p>
               </div>
             </div>
