@@ -67,11 +67,11 @@ sanctum:
   ai:
     api-key: ${GEMINI_API_KEY:}
     base-url: https://generativelanguage.googleapis.com
-    model: gemini-2.5-flash
+    model: gemini-3.6-flash
     prompts-location: classpath:prompts/
     timeout-seconds: 30
     max-history-turns: 20
-    max-output-tokens: 2048
+    max-output-tokens: 4096   # includes the model's thinking tokens
   ratelimit:
     chat-per-minute: 20
     expand-per-minute: 10
