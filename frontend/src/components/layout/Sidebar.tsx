@@ -41,11 +41,14 @@ export function Sidebar({ helpVariant = 'button' }: SidebarProps) {
           <div className="p-4 bg-primary-container rounded-xl text-on-primary-container">
             <p className="text-xs font-bold mb-2">Need Help?</p>
             <p className="text-[10px] leading-relaxed opacity-80">
-              Connect with a professional counselor instantly.
+              Connect with a professional instantly.
             </p>
-            <button className="mt-3 w-full py-2 bg-primary text-on-primary rounded-full text-xs font-bold">
+            <a
+              href="tel:911"
+              className="mt-3 w-full py-2 bg-primary text-on-primary rounded-full text-xs font-bold flex items-center justify-center"
+            >
               Call Hotline
-            </button>
+            </a>
           </div>
         </div>
       ) : helpVariant === 'advocate' ? (
