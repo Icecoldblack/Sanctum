@@ -62,6 +62,15 @@ export default {
         body: ['Manrope', 'sans-serif'],
         label: ['Manrope', 'sans-serif'],
       },
+      keyframes: {
+        'dialog-in': {
+          from: { opacity: '0', transform: 'translateY(12px) scale(0.98)' },
+          to: { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+      },
+      animation: {
+        'dialog-in': 'dialog-in 180ms ease-out',
+      },
       borderRadius: {
         DEFAULT: '0.25rem',
         lg: '0.5rem',

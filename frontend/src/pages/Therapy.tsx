@@ -7,7 +7,7 @@ import { useChat } from '@/hooks/useChat'
 import { useAutoResize } from '@/hooks/useAutoResize'
 import { BreathingExercise } from '@/components/shared/BreathingExercise'
 import { CrisisNumbers } from '@/components/shared/CrisisNumbers'
-import { quickExit } from '@/hooks/useQuickExit'
+import { quickExit } from '@/features/quick-exit/quickExit'
 
 const groundingSteps = [
   { n: 5, label: 'Things you can see', opacity: '' },
@@ -36,22 +36,22 @@ export function Therapy() {
     <div className="bg-background text-on-surface md:overflow-hidden">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="lg:ml-64 pt-16 flex flex-col md:h-screen">
+      <main className="lg:ml-64 pt-16 pb-24 md:pb-0 flex flex-col md:h-screen">
         {/* Situation Summary Header */}
-        <header className="px-6 py-8 md:px-12">
+        <header className="px-4 py-4 md:px-12 md:py-8">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-2">
+            <div className="hidden md:flex items-center gap-4 mb-2">
               <span className="px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold tracking-widest uppercase">
                 Current Session
               </span>
               <span className="text-xs text-on-surface-variant italic">This session only</span>
             </div>
-            <div className="bg-surface-container-low rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
+            <div className="bg-surface-container-low rounded-2xl px-5 py-3 md:p-8 flex flex-col md:flex-row gap-6 items-start">
               <div className="flex-1">
-                <h1 className="text-2xl md:text-3xl font-headline font-bold text-on-surface tracking-tight mb-3">
+                <h1 className="text-xl md:text-3xl font-headline font-bold text-on-surface tracking-tight md:mb-3">
                   The Sanctuary
                 </h1>
-                <p className="text-on-surface-variant text-sm md:text-base leading-relaxed max-w-2xl">
+                <p className="hidden md:block text-on-surface-variant text-sm md:text-base leading-relaxed max-w-2xl">
                   A non-judgmental space to process your feelings, build a safety plan, and find
                   immediate emotional groundedness.
                 </p>
@@ -68,10 +68,10 @@ export function Therapy() {
         </header>
 
         {/* Chat & Exercise Section */}
-        <section className="flex-1 px-6 md:px-12 pb-24 md:pb-6 md:overflow-hidden">
+        <section className="flex-1 px-4 md:px-12 pb-6 md:overflow-hidden">
           <div className="max-w-4xl mx-auto h-full grid grid-cols-1 md:grid-cols-12 gap-6">
             {/* Chat Window */}
-            <div className="md:col-span-8 bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden h-[65vh] md:h-auto">
+            <div className="md:col-span-8 h-[calc(100dvh-13.5rem)] min-h-[20rem] md:h-auto md:min-h-0 bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden">
               <div
                 ref={scrollRef}
                 role="log"

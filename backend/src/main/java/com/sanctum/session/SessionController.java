@@ -55,4 +55,15 @@ public class SessionController {
         sessionService.delete(sessionId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Same as DELETE, as a POST so the quick exit can fire it with {@code navigator.sendBeacon}
+     * while the page is navigating away. Beacons can only POST, and a bodiless POST is a
+     * CORS-simple request, so it is delivered without a preflight.
+     */
+    @PostMapping("/{sessionId}/erase")
+    public ResponseEntity<Void> erase(@PathVariable String sessionId) {
+        sessionService.delete(sessionId);
+        return ResponseEntity.noContent().build();
+    }
 }

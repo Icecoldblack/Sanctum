@@ -3,7 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#4c6557" />
+    <title>Sanctum</title>
+    <script>
+      // Apply a saved disguise (tab title and icon) before first paint, so the real name never
+      // flashes in the tab while the app loads. The app re-applies it fully once it boots.
+      try {
+        var shell = JSON.parse(localStorage.getItem('app-shell') || 'null')
+        if (shell && typeof shell.title === 'string') document.title = shell.title
+        if (shell && typeof shell.icon === 'string' && shell.icon.indexOf('data:image/png;base64,') === 0) {
+          var link = document.querySelector('link[rel="icon"]')
+          link.type = 'image/png'
+          link.href = shell.icon
+        }
+        if (shell && /^#[0-9a-fA-F]{6}$/.test(shell.theme)) {
+          document.querySelector('meta[name="theme-color"]').content = shell.theme
+        }
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,7 +32,6 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
     />
-    <title>Sanctum</title>
   </head>
   <body>
     <div id="root"></div>

@@ -24,29 +24,29 @@ export function Legal() {
   return (
     <div className="text-on-background selection:bg-primary-container selection:text-on-primary-container">
       <Navbar quickExitIcon />
-      <div className="flex h-screen overflow-hidden pt-16">
+      <div className="flex h-[calc(100dvh-4.5rem)] md:h-screen overflow-hidden pt-16">
         <Sidebar helpVariant="advocate" />
         <main className="flex-1 lg:ml-64 flex flex-col relative h-full bg-background">
           <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-container/20 blur-[120px] rounded-full pointer-events-none -z-10" />
           <div className="absolute bottom-10 left-10 w-1/4 h-1/4 bg-tertiary-container/20 blur-[100px] rounded-full pointer-events-none -z-10" />
 
           {/* Chat Header */}
-          <div className="px-8 pt-8 pb-4 flex flex-col gap-2">
+          <div className="px-4 pt-4 pb-2 md:px-8 md:pt-8 md:pb-4 flex flex-col gap-1 md:gap-2">
             <div className="flex items-center gap-2 text-primary font-bold tracking-tight">
               <Icon name="gavel" />
               <span className="uppercase text-xs tracking-[0.2em]">Legal Module</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-on-background leading-tight">
+            <h2 className="text-2xl md:text-4xl font-headline font-bold text-on-background leading-tight">
               Compass Guidance
             </h2>
-            <p className="text-on-surface-variant max-w-2xl text-lg">
+            <p className="text-on-surface-variant max-w-2xl text-sm md:text-lg">
               Navigating legal rights can feel overwhelming. I'm here to provide clear steps and
               resources based on your situation.
             </p>
           </div>
 
           {/* Chat Container */}
-          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" data-lenis-prevent className="flex-1 overflow-y-auto px-8 py-6 space-y-8 hide-scrollbar">
+          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 space-y-6 md:space-y-8 hide-scrollbar">
             {/* Disclaimer Box */}
             <div className="bg-surface-container-low p-5 rounded-2xl border-l-4 border-primary/30 max-w-3xl">
               <div className="flex gap-3">
@@ -128,8 +128,8 @@ export function Legal() {
             </p>
           )}
 
-          {/* Input Area — extra bottom padding clears the mobile BottomNav. */}
-          <div className="px-4 pb-24 pt-4 md:p-8 md:pt-4">
+          {/* Input Area */}
+          <div className="p-3 md:p-8 md:pt-4">
             <div className="max-w-4xl mx-auto glass-panel p-2 pl-6 rounded-full shadow-lg flex items-center gap-2 border border-surface-container-highest">
               <label htmlFor="legal-input" className="sr-only">
                 Message
@@ -154,7 +154,7 @@ export function Legal() {
                 <Icon name="send" />
               </button>
             </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-6">
+            <div className="mt-2 md:mt-4 flex flex-wrap justify-center gap-6">
               <button
                 type="button"
                 onClick={() => downloadConversation('legal', messages)}

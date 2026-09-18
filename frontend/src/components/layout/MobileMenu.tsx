@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { navItems } from '@/components/layout/nav-items'
 import { Icon } from '@/components/shared/Icon'
-import { quickExit } from '@/hooks/useQuickExit'
+import { quickExit } from '@/features/quick-exit/quickExit'
+import { openTour } from '@/features/onboarding/tourStore'
 
 interface MobileMenuProps {
   open: boolean
@@ -60,6 +61,29 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
               )}
             </NavLink>
           ))}
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex min-h-12 items-center gap-4 rounded-2xl px-4 font-medium transition-colors ${
+                isActive ? 'bg-primary-container text-on-primary-container' : 'text-on-surface-variant hover:bg-surface-container'
+              }`
+            }
+          >
+            <Icon name="tune" />
+            Safety settings
+          </NavLink>
+          <button
+            type="button"
+            onClick={() => {
+              onClose()
+              openTour()
+            }}
+            className="flex min-h-12 items-center gap-4 rounded-2xl px-4 text-left font-medium text-on-surface-variant transition-colors hover:bg-surface-container"
+          >
+            <Icon name="help" />
+            Guide
+          </button>
         </nav>
         <div className="mt-4 flex flex-col gap-3 border-t border-outline-variant/10 pt-4">
           <a

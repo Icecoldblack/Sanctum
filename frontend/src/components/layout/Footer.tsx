@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { quickExit } from '@/hooks/useQuickExit'
+import { quickExit } from '@/features/quick-exit/quickExit'
 import { useSession } from '@/hooks/useSession'
 
 interface FooterProps {

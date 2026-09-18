@@ -1,4 +1,6 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
+import { ImageDropzone, type PickedImage } from '@/components/shared/ImageDropzone'
+import type { ApiError } from '@/types'
 import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -13,50 +15,40 @@ type DecodeState =
   | { kind: 'not_found' }
   | { kind: 'error'; message: string }
 
-const ACCEPTED = ['image/png', 'image/jpeg']
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+const DECODE_ERRORS: Record<string, string> = {
+  unsupported_image: 'This isn’t a PNG image, so it can’t contain a Sanctum message.',
+  corrupt_payload:
+    'This image carries a Sanctum message, but it was damaged, often by an app that resized or compressed it. Ask the sender to send the original file.',
+  payload_too_large: 'That image is too large. Sanctum images are under 10 MB.',
+  image_too_large: 'That image’s dimensions are too large to be a Sanctum image.',
+  rate_limited: 'Too many tries in a short time. Wait a minute and try again.',
+  network_error: 'Couldn’t reach Sanctum. Check your connection and try again.',
+}
 
 export function Decode() {
-  const [file, setFile] = useState<File | null>(null)
+  const [picked, setPicked] = useState<PickedImage | null>(null)
   const [state, setState] = useState<DecodeState>({ kind: 'idle' })
-  const [isDragging, setIsDragging] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
-  function handleFileChange(selected: File | null) {
-    if (selected && !ACCEPTED.includes(selected.type)) {
-      setFile(null)
-      setState({ kind: 'error', message: 'That file is not a PNG or JPG image.' })
-      return
-    }
-    if (selected && selected.size > MAX_UPLOAD_BYTES) {
-      setFile(null)
-      setState({ kind: 'error', message: 'That image is larger than 10 MB.' })
-      return
-    }
-    setFile(selected)
+  function handlePick(next: PickedImage | null) {
+    setPicked(next)
     setState({ kind: 'idle' })
   }
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragging(false)
-    handleFileChange(e.dataTransfer.files?.[0] ?? null)
-  }
-
   async function handleDecode() {
-    if (!file) return
+    if (!picked?.isPng) return
     setState({ kind: 'loading' })
     try {
-      const response = await decodeImage(file)
+      const response = await decodeImage(picked.file)
       if (response.found && response.decodedMessage) {
         setState({ kind: 'found', message: response.decodedMessage })
       } else {
         setState({ kind: 'not_found' })
       }
-    } catch {
+    } catch (err) {
+      const code = (err as Partial<ApiError>)?.code ?? ''
       setState({
         kind: 'error',
-        message: 'This file could not be read. It may not be a valid image, or the upload failed.',
+        message: DECODE_ERRORS[code] ?? 'This image couldn’t be read. Try again, or choose a different file.',
       })
     }
   }
@@ -80,56 +72,15 @@ export function Decode() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Upload Zone */}
           <div className="md:col-span-7 space-y-6">
-            <div className="relative group">
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault()
-                  setIsDragging(true)
-                }}
-                onDragLeave={() => setIsDragging(false)}
-                onDrop={handleDrop}
-                className={`w-full aspect-video md:aspect-[4/3] rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 cursor-pointer p-8 text-center ${
-                  isDragging
-                    ? 'border-primary bg-primary-container/40'
-                    : 'border-outline-variant/30 bg-surface-container group-hover:bg-surface-container-high'
-                }`}
-              >
-                <Icon name="cloud_upload" className="text-5xl text-primary mb-4" />
-                <h3 className="text-xl font-bold text-on-surface mb-2 break-all">
-                  {isDragging ? 'Drop to upload' : file ? file.name : 'Drop your image here'}
-                </h3>
-                <p className="text-sm text-on-surface-variant">Supports PNG or JPG encoded images</p>
-                {file && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleFileChange(null)
-                      if (inputRef.current) inputRef.current.value = ''
-                    }}
-                    className="relative z-10 mt-4 inline-flex items-center gap-1.5 rounded-full bg-surface-container-highest px-4 py-2 text-xs font-bold text-on-surface-variant transition-colors hover:text-error"
-                  >
-                    <Icon name="close" className="text-sm" />
-                    Remove
-                  </button>
-                )}
-                {/* Sits below the Remove button so that button stays clickable. */}
-                <input
-                  ref={inputRef}
-                  aria-label="Upload SOS Image"
-                  className="absolute inset-0 z-0 w-full h-full opacity-0 cursor-pointer"
-                  type="file"
-                  accept="image/png,image/jpeg"
-                  onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
-                />
+            <ImageDropzone value={picked} onChange={handlePick} disabled={state.kind === 'loading'} />
+            {picked && (
+              <div className="flex justify-center md:justify-start">
+                <Button onClick={handleDecode} disabled={!picked.isPng} isLoading={state.kind === 'loading'}>
+                  <Icon name="key" />
+                  {state.kind === 'loading' ? 'Reading…' : 'Reveal message'}
+                </Button>
               </div>
-            </div>
-            <div className="flex justify-center md:justify-start">
-              <Button onClick={handleDecode} disabled={!file} isLoading={state.kind === 'loading'}>
-                <Icon name="key" />
-                Decode Message
-              </Button>
-            </div>
+            )}
           </div>
 
           {/* Results & Info Panel */}

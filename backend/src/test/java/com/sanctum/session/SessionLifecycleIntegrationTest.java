@@ -11,7 +11,11 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 class SessionLifecycleIntegrationTest extends AbstractIntegrationTest {
@@ -119,6 +123,25 @@ class SessionLifecycleIntegrationTest extends AbstractIntegrationTest {
         assertThat(jdbc.queryForObject("select count(*) from sessions where session_id = ?::uuid", Integer.class, id))
                 .isZero();
         assertThat(countMessages(id)).isZero();
+    }
+
+    @Test
+    void eraseViaBeaconStyleRequestHardDeletes() {
+        String id = createSession();
+        postJson("/api/chat/therapy", Map.of("sessionId", id, "message", "hello"));
+
+        // What navigator.sendBeacon sends: a bodiless, cross-origin POST with no preflight.
+        HttpHeaders headers = new HttpHeaders();
+        headers.setOrigin("http://localhost:5173");
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        ResponseEntity<String> response = rest.exchange(
+                "/api/sessions/" + id + "/erase", HttpMethod.POST, new HttpEntity<>("", headers), String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(get("/api/sessions/" + id).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(countMessages(id)).isZero();
+        assertThat(rest.postForEntity("/api/sessions/" + UUID.randomUUID() + "/erase", null, String.class)
+                .getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
