@@ -11,3 +11,5 @@ dist/
 
 # Backend build output
 target/
+
+.env
