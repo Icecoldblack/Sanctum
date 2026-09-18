@@ -1,0 +1,98 @@
+spring:
+  application:
+    name: sanctum
+  profiles:
+    default: dev
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate      # Flyway owns the schema
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+  lifecycle:
+    timeout-per-shutdown-phase: 45s   # let in-flight AI calls (30s timeout) finish
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  autoconfigure:
+    # No accounts: never let Spring Security create (and log) a default user.
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+server:
+  port: 8080
+  shutdown: graceful
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-exception: false
+    include-binding-errors: never
+  tomcat:
+    # Allow the server to read past an oversized upload so it can answer 413 cleanly.
+    max-swallow-size: 16MB
+    accesslog:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: false
+
+sanctum:
+  session:
+    ttl-hours: 24
+    max-ttl-days: 7
+  encryption:
+    key: ${SANCTUM_ENCRYPTION_KEY}     # base64, 32 bytes
+  ai:
+    api-key: ${GEMINI_API_KEY:}
+    base-url: https://generativelanguage.googleapis.com
+    model: gemini-2.5-flash
+    prompts-location: classpath:prompts/
+    timeout-seconds: 30
+    max-history-turns: 20
+    max-output-tokens: 2048
+  ratelimit:
+    chat-per-minute: 20
+    expand-per-minute: 10
+    encode-per-minute: 10
+    decode-per-minute: 10
+    session-create-per-minute: 5
+  stego:
+    max-pixels: 20000000
+    max-dimension: 8192
+  cors:
+    allowed-origins: http://localhost:5173
+  crisis:
+    # Configurable per deployment region. Defaults are United States resources.
+    resources:
+      - "If you are in immediate danger, call 911 (or your local emergency number)."
+      - "National Domestic Violence Hotline: 1-800-799-7233, or text START to 88788."
+      - "988 Suicide & Crisis Lifeline: call or text 988."
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.orm.jdbc.bind: OFF
+    org.springframework.web: WARN

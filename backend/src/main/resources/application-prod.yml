@@ -1,0 +1,6 @@
+server:
+  forward-headers-strategy: native
+
+sanctum:
+  cors:
+    allowed-origins: ${SANCTUM_ALLOWED_ORIGIN}

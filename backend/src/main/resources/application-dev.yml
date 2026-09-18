@@ -1,0 +1,13 @@
+# Local development. No secrets live here: SANCTUM_ENCRYPTION_KEY and GEMINI_API_KEY come from the
+# environment or from backend/.env (git-ignored). Real environment variables take precedence.
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/sanctum}
+    username: ${DATABASE_USER:sanctum}
+    password: ${DATABASE_PASSWORD:sanctum}
+
+sanctum:
+  cors:
+    allowed-origins: http://localhost:5173
