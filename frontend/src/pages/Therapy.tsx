@@ -73,6 +73,7 @@ export function Therapy() {
                 role="log"
                 aria-live="polite"
                 aria-label="Conversation"
+                data-lenis-prevent
                 className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar"
               >
                 {messages.length === 0 && (

@@ -11,6 +11,26 @@
   }
 }
 
+/* Lenis smooth scrolling. `lenis-stopped` guards against scrolling while a
+   modal or overlay has locked the page. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Opt any inner scrollable panel out of the smooth wrapper. */
+[data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
 .material-symbols-outlined {
   font-variation-settings:
     'FILL' 0,

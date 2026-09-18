@@ -45,7 +45,7 @@ export function Legal() {
           </div>
 
           {/* Chat Container */}
-          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" className="flex-1 overflow-y-auto px-8 py-6 space-y-8 hide-scrollbar">
+          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" data-lenis-prevent className="flex-1 overflow-y-auto px-8 py-6 space-y-8 hide-scrollbar">
             {/* Disclaimer Box */}
             <div className="bg-surface-container-low p-5 rounded-2xl border-l-4 border-primary/30 max-w-3xl">
               <div className="flex gap-3">
