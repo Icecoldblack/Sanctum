@@ -66,6 +66,7 @@ export function Decode() {
       <Navbar />
       <Sidebar helpVariant="card" />
       <main className="flex-grow pt-24 pb-28 md:pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
+
         <header className="mb-12 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
             SOS Decoder
