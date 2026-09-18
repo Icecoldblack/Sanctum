@@ -118,11 +118,14 @@ export function Home() {
                     Open Safety Messenger <Icon name="arrow_forward" />
                   </Link>
                 </div>
-                <div className="w-full md:w-1/2 rounded-[2rem] h-64 overflow-hidden shadow-sm">
+                <div className="w-full md:w-1/2 rounded-[2rem] h-64 md:h-80 overflow-hidden shadow-sm">
                   <img
-                    alt="Subtle messaging"
-                    className="w-full h-full object-cover"
-                    src="/images/tool-sos.png"
+                    alt="Two people holding hands across a table"
+                    className="w-full h-full object-cover object-center"
+                    loading="lazy"
+                    width={1600}
+                    height={780}
+                    src="/images/tool-sos-natalia.jpg"
                   />
                 </div>
               </div>
@@ -150,7 +153,7 @@ export function Home() {
                     Enter the Sanctuary <Icon name="arrow_forward" />
                   </Link>
                 </div>
-                <div className="w-full md:w-1/2 rounded-[2rem] h-64 overflow-hidden shadow-sm">
+                <div className="w-full md:w-1/2 rounded-[2rem] h-64 md:h-80 overflow-hidden shadow-sm">
                   <img
                     alt="Calm yoga studio"
                     className="w-full h-full object-cover"
@@ -183,11 +186,14 @@ export function Home() {
                     Navigate Rights <Icon name="arrow_forward" />
                   </Link>
                 </div>
-                <div className="w-full md:w-1/2 rounded-[2rem] h-64 overflow-hidden shadow-sm">
+                <div className="w-full md:w-1/2 rounded-[2rem] h-64 md:h-80 overflow-hidden shadow-sm">
                   <img
-                    alt="Legal guidance"
-                    className="w-full h-full object-cover"
-                    src="/images/tool-compass.png"
+                    alt="Hands writing notes in a journal"
+                    className="w-full h-full object-cover object-center"
+                    loading="lazy"
+                    width={1600}
+                    height={600}
+                    src="/images/tool-compass-marcos.jpg"
                   />
                 </div>
               </div>
