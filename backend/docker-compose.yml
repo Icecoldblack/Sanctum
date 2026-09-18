@@ -1,0 +1,22 @@
+# Local development database. Credentials are local-only and not secrets.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: sanctum
+      POSTGRES_USER: sanctum
+      POSTGRES_PASSWORD: sanctum
+    ports:
+      - "127.0.0.1:5432:5432"
+    # Keep the database off disk logs of statements.
+    command: ["postgres", "-c", "log_statement=none"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sanctum -d sanctum"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - sanctum-pg:/var/lib/postgresql/data
+
+volumes:
+  sanctum-pg:

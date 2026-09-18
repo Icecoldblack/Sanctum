@@ -1,0 +1,12 @@
+sanctum:
+  encryption:
+    # Throwaway key for tests only (bytes 0..31).
+    key: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=
+  ai:
+    api-key: ""
+    max-history-turns: 3
+  ratelimit:
+    session-create-per-minute: 10000
+  session:
+    # Tests call the cleanup job directly.
+    cleanup-initial-delay: PT24H
