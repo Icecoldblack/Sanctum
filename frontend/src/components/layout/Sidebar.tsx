@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { navItems } from '@/components/layout/nav-items'
 import { Icon } from '@/components/shared/Icon'
+import { HOTLINE_TEL } from '@/lib/hotlines'
 
 type HelpVariant = 'button' | 'card' | 'advocate'
 
@@ -44,27 +45,35 @@ export function Sidebar({ helpVariant = 'button' }: SidebarProps) {
               Connect with a professional instantly.
             </p>
             <a
-              href="tel:911"
-              className="mt-3 w-full py-2 bg-primary text-on-primary rounded-full text-xs font-bold flex items-center justify-center"
+              href={HOTLINE_TEL}
+              className="mt-3 w-full py-2 bg-primary text-on-primary rounded-full text-xs font-bold flex items-center justify-center gap-1.5"
             >
+              <Icon name="call" className="text-sm" />
               Call Hotline
             </a>
           </div>
         </div>
       ) : helpVariant === 'advocate' ? (
         <div className="mt-auto px-6 pb-8">
-          <button className="w-full py-4 px-4 bg-primary text-on-primary rounded-xl font-bold flex flex-col items-center justify-center gap-1 shadow-md hover:opacity-95 transition-opacity">
+          <a
+            href={HOTLINE_TEL}
+            className="w-full py-4 px-4 bg-primary text-on-primary rounded-xl font-bold flex flex-col items-center justify-center gap-1 shadow-md hover:opacity-95 transition-opacity"
+          >
             <span className="text-xs font-medium opacity-80 uppercase tracking-widest">
               Need Help?
             </span>
             <span className="text-sm">Speak to an advocate</span>
-          </button>
+          </a>
         </div>
       ) : (
         <div className="mt-auto px-6">
-          <button className="w-full py-3 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-sm">
+          <a
+            href={HOTLINE_TEL}
+            className="w-full py-3 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-sm flex items-center justify-center gap-2"
+          >
+            <Icon name="call" className="text-sm" />
             Need Help?
-          </button>
+          </a>
         </div>
       )}
     </aside>

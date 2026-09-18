@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { Icon } from '@/components/shared/Icon'
 import { useChat } from '@/hooks/useChat'
 import { useAutoResize } from '@/hooks/useAutoResize'
+import { BreathingExercise } from '@/components/shared/BreathingExercise'
+import { CrisisNumbers } from '@/components/shared/CrisisNumbers'
+import { quickExit } from '@/hooks/useQuickExit'
 
 const groundingSteps = [
   { n: 5, label: 'Things you can see', opacity: '' },
@@ -16,6 +19,7 @@ export function Therapy() {
   const { messages, input, setInput, send, isLoading, error } = useChat('therapy')
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useAutoResize(input)
+  const [numbersOpen, setNumbersOpen] = useState(false)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -29,10 +33,10 @@ export function Therapy() {
   }
 
   return (
-    <div className="bg-background text-on-surface overflow-hidden">
+    <div className="bg-background text-on-surface md:overflow-hidden">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="lg:ml-64 pt-16 h-screen flex flex-col">
+      <main className="lg:ml-64 pt-16 flex flex-col md:h-screen">
         {/* Situation Summary Header */}
         <header className="px-6 py-8 md:px-12">
           <div className="max-w-4xl mx-auto">
@@ -64,10 +68,10 @@ export function Therapy() {
         </header>
 
         {/* Chat & Exercise Section */}
-        <section className="flex-1 px-6 md:px-12 pb-6 overflow-hidden">
+        <section className="flex-1 px-6 md:px-12 pb-24 md:pb-6 md:overflow-hidden">
           <div className="max-w-4xl mx-auto h-full grid grid-cols-1 md:grid-cols-12 gap-6">
             {/* Chat Window */}
-            <div className="md:col-span-8 bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden">
+            <div className="md:col-span-8 bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/10 flex flex-col overflow-hidden h-[65vh] md:h-auto">
               <div
                 ref={scrollRef}
                 role="log"
@@ -213,14 +217,7 @@ export function Therapy() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   src="/images/therapy-ocean.png"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-6">
-                  <p className="text-white text-xs font-headline font-medium mb-1">Visual Escape</p>
-                  <h4 className="text-white text-lg font-bold">Ocean Breathing</h4>
-                  <button className="mt-3 flex items-center gap-2 text-[10px] bg-white/20 backdrop-blur-md text-white py-2 px-4 rounded-full w-fit hover:bg-white/30 transition-colors">
-                    <Icon name="play_circle" className="text-xs" />
-                    Listen to the waves
-                  </button>
-                </div>
+                <BreathingExercise />
               </div>
 
               <div className="p-4 bg-error-container/10 rounded-2xl border border-error-container/20">
@@ -233,8 +230,19 @@ export function Therapy() {
                 <p className="text-xs text-on-surface-variant leading-relaxed mb-3">
                   Feeling unsafe? Exit immediately and contact local support.
                 </p>
-                <button className="w-full py-2 border border-error text-error rounded-full text-[10px] font-bold hover:bg-error/5 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setNumbersOpen(true)}
+                  className="w-full py-2 border border-error text-error rounded-full text-[10px] font-bold hover:bg-error/5 transition-colors"
+                >
                   Emergency Protocol
+                </button>
+                <button
+                  type="button"
+                  onClick={quickExit}
+                  className="mt-2 w-full py-2 bg-error text-on-error rounded-full text-[10px] font-bold hover:brightness-110 transition-all"
+                >
+                  Leave this site now
                 </button>
               </div>
             </div>
@@ -242,6 +250,7 @@ export function Therapy() {
         </section>
       </main>
       <BottomNav />
+      <CrisisNumbers open={numbersOpen} onClose={() => setNumbersOpen(false)} />
     </div>
   )
 }

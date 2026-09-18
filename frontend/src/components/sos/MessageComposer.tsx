@@ -8,6 +8,8 @@ interface MessageComposerProps {
   onExpand: () => void
   isExpanding: boolean
   expandError: string | null
+  /** Characters the selected carrier can hold, or null if none is chosen yet. */
+  capacity: number | null
 }
 
 export function MessageComposer({
@@ -17,8 +19,11 @@ export function MessageComposer({
   onExpand,
   isExpanding,
   expandError,
+  capacity,
 }: MessageComposerProps) {
   const textareaRef = useAutoResize(shortInput)
+  const finalMessage = expandedMessage || shortInput
+  const over = capacity !== null && finalMessage.length > capacity
 
   return (
     <>
@@ -47,7 +52,7 @@ export function MessageComposer({
           type="button"
           onClick={onExpand}
           disabled={isExpanding || !shortInput.trim()}
-          className="mt-4 flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all group disabled:opacity-40"
+          className="mt-4 flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all group disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <span>{isExpanding ? 'Expanding…' : 'Expand with AI'}</span>
           <Icon
@@ -72,9 +77,23 @@ export function MessageComposer({
           </div>
           <span className="text-xs font-bold uppercase tracking-widest text-outline">Encrypted</span>
         </div>
-        <div className="bg-surface p-6 rounded-2xl border-l-4 border-primary italic text-on-surface-variant leading-relaxed">
-          {expandedMessage || shortInput || 'Your message will appear here once you start typing.'}
+        <div
+          className={`bg-surface p-6 rounded-2xl border-l-4 italic text-on-surface-variant leading-relaxed ${
+            over ? 'border-error' : 'border-primary'
+          }`}
+        >
+          {finalMessage || 'Your message will appear here once you start typing.'}
         </div>
+        {finalMessage && (
+          <p
+            className={`mt-3 text-right text-xs font-medium tabular-nums ${
+              over ? 'text-error' : 'text-on-surface-variant'
+            }`}
+          >
+            {finalMessage.length.toLocaleString()}
+            {capacity !== null && ` / ${capacity.toLocaleString()}`} characters
+          </p>
+        )}
       </section>
     </>
   )

@@ -1,6 +1,11 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from 'react'
-import { createSession, deleteSession as deleteSessionRequest } from '@/api/session'
-import type { Session } from '@/types'
+import {
+  createSession,
+  deleteSession as deleteSessionRequest,
+  fetchSession,
+} from '@/api/session'
+import type { ChatMessage, Session } from '@/types'
+import type { ChatVariant } from '@/api/chat'
 
 const STORAGE_KEY = 'sanctum_session_id'
 
@@ -8,6 +13,8 @@ interface SessionContextValue {
   session: Session | null
   isLoading: boolean
   clearData: () => Promise<void>
+  /** Mirrors a completed exchange into context so it survives navigation. */
+  recordMessages: (variant: ChatVariant, messages: ChatMessage[]) => void
 }
 
 export const SessionContext = createContext<SessionContextValue | null>(null)
@@ -32,9 +39,33 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     let cancelled = false
 
     async function init() {
-      const storedId = localStorage.getItem(STORAGE_KEY)
+      let storedId = localStorage.getItem(STORAGE_KEY)
       if (storedId?.startsWith('local-')) {
         localStorage.removeItem(STORAGE_KEY)
+        storedId = null
+      }
+
+      // Resume the stored session first so conversations survive a reload or a
+      // full page navigation. A 404/410 means it expired server-side, in which
+      // case we fall through and create a new one.
+      if (storedId) {
+        try {
+          const existing = await fetchSession(storedId)
+          if (cancelled) return
+          setSession({
+            sessionId: existing.sessionId,
+            createdAt: existing.createdAt,
+            expiresAt: existing.expiresAt,
+            situationSummary: existing.situationSummary,
+            conversations: existing.conversations ?? {},
+            isOffline: false,
+          })
+          setIsLoading(false)
+          return
+        } catch {
+          if (cancelled) return
+          localStorage.removeItem(STORAGE_KEY)
+        }
       }
 
       try {
@@ -76,8 +107,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setSession(createOfflineSession())
   }, [session])
 
+  const recordMessages = useCallback((variant: ChatVariant, messages: ChatMessage[]) => {
+    setSession((prev) =>
+      prev
+        ? { ...prev, conversations: { ...prev.conversations, [variant]: messages } }
+        : prev,
+    )
+  }, [])
+
   return (
-    <SessionContext.Provider value={{ session, isLoading, clearData }}>
+    <SessionContext.Provider value={{ session, isLoading, clearData, recordMessages }}>
       {children}
     </SessionContext.Provider>
   )

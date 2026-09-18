@@ -1,9 +1,16 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 import { Icon } from '@/components/shared/Icon'
 import { Reveal } from '@/components/shared/Reveal'
+import { IncognitoTips } from '@/components/shared/IncognitoTips'
+import { CrisisNumbers } from '@/components/shared/CrisisNumbers'
 
 export function Home() {
+  const [tipsOpen, setTipsOpen] = useState(false)
+  const [numbersOpen, setNumbersOpen] = useState(false)
+
   return (
     <>
       <Navbar />
@@ -212,15 +219,17 @@ export function Home() {
                 This platform is a support tool, not a replacement for emergency intervention.
               </p>
               <div className="flex flex-col md:flex-row justify-center gap-4">
-                <a
-                  href="tel:911"
+                <button
+                  type="button"
+                  onClick={() => setNumbersOpen(true)}
                   className="px-10 py-5 bg-secondary text-white rounded-full font-extrabold text-lg flex items-center justify-center gap-3 hover:shadow-2xl transition-all"
                 >
                   <Icon name="emergency" />
                   Local Crisis Numbers
-                </a>
+                </button>
                 <button
                   type="button"
+                  onClick={() => setTipsOpen(true)}
                   className="px-10 py-5 bg-surface-container-highest text-on-surface font-extrabold text-lg rounded-full flex items-center justify-center gap-3 hover:brightness-95 transition-all"
                 >
                   <Icon name="visibility_off" />
@@ -232,70 +241,10 @@ export function Home() {
         </Reveal>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface-container text-on-surface-variant py-12 px-6">
-        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-          <div className="max-w-sm">
-            <div className="text-2xl font-bold tracking-tighter text-[#4c6557] mb-4">Sanctum</div>
-            <p className="text-sm leading-relaxed">
-              Designed with care for survivors, by survivors and experts. We believe technology
-              should protect, not track.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
-            <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-on-surface text-sm uppercase tracking-widest">
-                Resources
-              </h4>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Safety Tips
-              </a>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Legal Basics
-              </a>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Partners
-              </a>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-on-surface text-sm uppercase tracking-widest">
-                Ethics
-              </h4>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Data Zero Policy
-              </a>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                How We Work
-              </a>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Transparency
-              </a>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="font-bold text-on-surface text-sm uppercase tracking-widest">
-                Emergency
-              </h4>
-              <Link className="text-sm text-error font-bold hover:brightness-110 transition-colors" to="/sos">
-                Quick Exit
-              </Link>
-              <a className="text-sm hover:text-primary transition-colors" href="#">
-                Erase Session
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-screen-xl mx-auto mt-16 pt-8 border-t border-outline-variant/10 text-xs flex justify-between items-center">
-          <span>© 2024 Sanctum Foundation. Private and secure.</span>
-          <div className="flex gap-6">
-            <a className="hover:text-primary" href="#">
-              Privacy
-            </a>
-            <a className="hover:text-primary" href="#">
-              Terms
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer onIncognitoTips={() => setTipsOpen(true)} />
+
+      <IncognitoTips open={tipsOpen} onClose={() => setTipsOpen(false)} />
+      <CrisisNumbers open={numbersOpen} onClose={() => setNumbersOpen(false)} />
     </>
   )
 }

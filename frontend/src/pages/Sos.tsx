@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -9,10 +9,9 @@ import { EncodeResult } from '@/components/sos/EncodeResult'
 import type { Carrier } from '@/components/sos/carriers'
 import { expandMessage, encodeMessage } from '@/api/sos'
 import { useSession } from '@/hooks/useSession'
+import { capacityForPixels, measureImage } from '@/lib/capacity'
 
-// Encoded pixels store data losslessly at roughly 1 bit per color channel byte;
-// this is a conservative estimate so users get a capacity warning before the request.
-const APPROX_CAPACITY_CHARS = 500
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 export function Sos() {
   const { session } = useSession()
@@ -23,12 +22,59 @@ export function Sos() {
   const [expandError, setExpandError] = useState<string | null>(null)
 
   const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null)
+  const [customCarrier, setCustomCarrier] = useState<Carrier | null>(null)
+  const [customError, setCustomError] = useState<string | null>(null)
+  const [capacity, setCapacity] = useState<number | null>(null)
   const [isEncoding, setIsEncoding] = useState(false)
   const [encodeError, setEncodeError] = useState<string | null>(null)
   const [result, setResult] = useState<{ imageUrl: string; byteSize: number } | null>(null)
 
   const finalMessage = expandedMessage || shortInput
-  const overCapacity = finalMessage.length > APPROX_CAPACITY_CHARS
+  const overCapacity = capacity !== null && finalMessage.length > capacity
+
+  // Measure whichever carrier is selected so the limit reflects the real image.
+  useEffect(() => {
+    if (!selectedCarrier) {
+      setCapacity(null)
+      return
+    }
+    let cancelled = false
+    measureImage(selectedCarrier.src)
+      .then(({ width, height }) => {
+        if (!cancelled) setCapacity(capacityForPixels(width, height))
+      })
+      .catch(() => {
+        if (!cancelled) setCapacity(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [selectedCarrier])
+
+  // A blob URL for an uploaded photo has to be released when it is replaced.
+  useEffect(() => {
+    const url = customCarrier?.src
+    return () => {
+      if (url?.startsWith('blob:')) URL.revokeObjectURL(url)
+    }
+  }, [customCarrier])
+
+  function handleCustomSelect(file: File) {
+    setCustomError(null)
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setCustomError('That photo is larger than 10 MB. Choose a smaller one.')
+      return
+    }
+    const carrier: Carrier = {
+      id: `custom-${Date.now()}`,
+      label: `Your photo (${file.name})`,
+      src: URL.createObjectURL(file),
+      alt: 'the photo you selected as a carrier image',
+    }
+    setCustomCarrier(carrier)
+    setSelectedCarrier(carrier)
+    setResult(null)
+  }
 
   async function handleExpand() {
     if (!session || !shortInput.trim()) return
@@ -60,13 +106,14 @@ export function Sos() {
     }
   }
 
-  const canEncode = Boolean(finalMessage.trim()) && Boolean(selectedCarrier) && !overCapacity
+  const canEncode =
+    Boolean(finalMessage.trim()) && Boolean(selectedCarrier) && !overCapacity
 
   return (
     <>
       <Navbar />
       <Sidebar />
-      <main className="pt-24 pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto">
+      <main className="pt-24 pb-28 lg:pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto">
         <header className="mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tighter mb-4 font-headline">
             Steganography <span className="text-primary">Messenger</span>
@@ -88,6 +135,7 @@ export function Sos() {
               onExpand={handleExpand}
               isExpanding={isExpanding}
               expandError={expandError}
+              capacity={capacity}
             />
           </div>
 
@@ -101,16 +149,33 @@ export function Sos() {
                 <h3 className="text-xl font-bold text-on-surface font-headline">3. Carrier Image</h3>
               </div>
 
-              <CarrierPicker selectedId={selectedCarrier?.id ?? null} onSelect={setSelectedCarrier} />
+              <CarrierPicker
+                selectedId={selectedCarrier?.id ?? null}
+                onSelect={(carrier) => {
+                  setSelectedCarrier(carrier)
+                  setResult(null)
+                }}
+                custom={customCarrier}
+                onCustomSelect={handleCustomSelect}
+                error={customError}
+              />
 
               <p className="text-xs text-on-surface-variant/70 mb-8 italic">
-                Selecting a nature-themed image is recommended for maximum discretion.
+                {selectedCarrier && capacity !== null
+                  ? `This image holds about ${capacity.toLocaleString()} characters.`
+                  : 'Selecting a nature-themed image is recommended for maximum discretion.'}
               </p>
 
-              {overCapacity && (
+              {!selectedCarrier && finalMessage.trim() && (
+                <p className="mb-4 text-xs font-medium text-on-surface-variant">
+                  Choose a carrier image to continue.
+                </p>
+              )}
+
+              {overCapacity && capacity !== null && (
                 <p role="alert" className="mb-4 text-xs font-medium text-error">
-                  Your message is too long to hide reliably in this image. Shorten it before
-                  sending.
+                  Your message is {finalMessage.length - capacity} characters too long for this
+                  image. Shorten it, or pick a larger photo.
                 </p>
               )}
 
@@ -127,7 +192,7 @@ export function Sos() {
                   type="button"
                   onClick={handleEncode}
                   disabled={!canEncode || isEncoding}
-                  className="w-full bg-primary text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-3 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow disabled:opacity-40"
+                  className="w-full bg-primary text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-3 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Icon name="download_for_offline" />
                   {isEncoding ? 'Encoding…' : 'Download Secure Image'}

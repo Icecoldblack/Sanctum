@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { Icon } from '@/components/shared/Icon'
 import { useChat } from '@/hooks/useChat'
+import { downloadConversation } from '@/lib/exportConversation'
 
 export function Legal() {
   const { messages, input, setInput, send, isLoading, error } = useChat('legal')
@@ -127,16 +128,9 @@ export function Legal() {
             </p>
           )}
 
-          {/* Input Area */}
-          <div className="p-8 pt-4">
-            <div className="max-w-4xl mx-auto glass-panel p-2 rounded-full shadow-lg flex items-center gap-2 border border-surface-container-highest">
-              <button
-                type="button"
-                aria-label="Attach file"
-                className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors"
-              >
-                <Icon name="attach_file" />
-              </button>
+          {/* Input Area — extra bottom padding clears the mobile BottomNav. */}
+          <div className="px-4 pb-24 pt-4 md:p-8 md:pt-4">
+            <div className="max-w-4xl mx-auto glass-panel p-2 pl-6 rounded-full shadow-lg flex items-center gap-2 border border-surface-container-highest">
               <label htmlFor="legal-input" className="sr-only">
                 Message
               </label>
@@ -160,20 +154,24 @@ export function Legal() {
                 <Icon name="send" />
               </button>
             </div>
-            <div className="mt-4 flex justify-center gap-6">
+            <div className="mt-4 flex flex-wrap justify-center gap-6">
               <button
                 type="button"
-                className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1"
+                onClick={() => downloadConversation('legal', messages)}
+                disabled={messages.length === 0}
+                className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 disabled:opacity-40 disabled:hover:text-on-surface-variant"
               >
-                <Icon name="history" className="text-sm" />
-                View History
+                <Icon name="download" className="text-sm" />
+                Export Conversation
               </button>
               <button
                 type="button"
-                className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1"
+                onClick={() => window.print()}
+                disabled={messages.length === 0}
+                className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 disabled:opacity-40 disabled:hover:text-on-surface-variant"
               >
                 <Icon name="print" className="text-sm" />
-                Export Conversation
+                Print
               </button>
             </div>
           </div>

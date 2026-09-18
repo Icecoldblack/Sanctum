@@ -13,14 +13,34 @@ type DecodeState =
   | { kind: 'not_found' }
   | { kind: 'error'; message: string }
 
+const ACCEPTED = ['image/png', 'image/jpeg']
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
 export function Decode() {
   const [file, setFile] = useState<File | null>(null)
   const [state, setState] = useState<DecodeState>({ kind: 'idle' })
+  const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleFileChange(selected: File | null) {
+    if (selected && !ACCEPTED.includes(selected.type)) {
+      setFile(null)
+      setState({ kind: 'error', message: 'That file is not a PNG or JPG image.' })
+      return
+    }
+    if (selected && selected.size > MAX_UPLOAD_BYTES) {
+      setFile(null)
+      setState({ kind: 'error', message: 'That image is larger than 10 MB.' })
+      return
+    }
     setFile(selected)
     setState({ kind: 'idle' })
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+    handleFileChange(e.dataTransfer.files?.[0] ?? null)
   }
 
   async function handleDecode() {
@@ -45,7 +65,7 @@ export function Decode() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="flex-grow pt-24 pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
+      <main className="flex-grow pt-24 pb-28 md:pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
         <header className="mb-12 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
             SOS Decoder
@@ -60,16 +80,43 @@ export function Decode() {
           {/* Upload Zone */}
           <div className="md:col-span-7 space-y-6">
             <div className="relative group">
-              <div className="w-full aspect-video md:aspect-[4/3] bg-surface-container rounded-xl border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center transition-all duration-300 group-hover:bg-surface-container-high cursor-pointer p-8 text-center">
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setIsDragging(true)
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                className={`w-full aspect-video md:aspect-[4/3] rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 cursor-pointer p-8 text-center ${
+                  isDragging
+                    ? 'border-primary bg-primary-container/40'
+                    : 'border-outline-variant/30 bg-surface-container group-hover:bg-surface-container-high'
+                }`}
+              >
                 <Icon name="cloud_upload" className="text-5xl text-primary mb-4" />
-                <h3 className="text-xl font-bold text-on-surface mb-2">
-                  {file ? file.name : 'Drop your image here'}
+                <h3 className="text-xl font-bold text-on-surface mb-2 break-all">
+                  {isDragging ? 'Drop to upload' : file ? file.name : 'Drop your image here'}
                 </h3>
                 <p className="text-sm text-on-surface-variant">Supports PNG or JPG encoded images</p>
+                {file && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleFileChange(null)
+                      if (inputRef.current) inputRef.current.value = ''
+                    }}
+                    className="relative z-10 mt-4 inline-flex items-center gap-1.5 rounded-full bg-surface-container-highest px-4 py-2 text-xs font-bold text-on-surface-variant transition-colors hover:text-error"
+                  >
+                    <Icon name="close" className="text-sm" />
+                    Remove
+                  </button>
+                )}
+                {/* Sits below the Remove button so that button stays clickable. */}
                 <input
                   ref={inputRef}
                   aria-label="Upload SOS Image"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="absolute inset-0 z-0 w-full h-full opacity-0 cursor-pointer"
                   type="file"
                   accept="image/png,image/jpeg"
                   onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
@@ -161,11 +208,8 @@ function DecodeResultView({ state }: { state: DecodeState }) {
         </div>
       )
     case 'found':
-      return (
-        <div className="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/10">
-          <p className="text-on-surface leading-relaxed italic">"{state.message}"</p>
-        </div>
-      )
+      return <DecodedMessage message={state.message} />
+
     case 'not_found':
       return (
         <div className="flex-grow flex flex-col items-center justify-center text-center text-on-surface-variant">
@@ -181,4 +225,36 @@ function DecodeResultView({ state }: { state: DecodeState }) {
         </div>
       )
   }
+}
+
+function DecodedMessage({ message }: { message: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(message)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard access can be blocked; the text is selectable either way.
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant/10">
+        <p className="text-on-surface leading-relaxed italic whitespace-pre-wrap break-words">
+          "{message}"
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={copy}
+        className="inline-flex items-center gap-2 rounded-full bg-surface-container-highest px-4 py-2 text-xs font-bold text-on-surface-variant transition-colors hover:text-primary"
+      >
+        <Icon name={copied ? 'check' : 'content_copy'} className="text-sm" />
+        {copied ? 'Copied' : 'Copy message'}
+      </button>
+    </div>
+  )
 }
