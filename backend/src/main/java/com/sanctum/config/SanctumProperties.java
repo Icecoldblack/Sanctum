@@ -24,7 +24,15 @@ public record SanctumProperties(
             int timeoutSeconds,
             int maxHistoryTurns,
             int maxOutputTokens,
-            String promptsLocation) {
+            String promptsLocation,
+            String imageModel) {
+
+        public static final String DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
+
+        /** Model used to generate SOS carrier photos. */
+        public String imageModelOrDefault() {
+            return imageModel == null || imageModel.isBlank() ? DEFAULT_IMAGE_MODEL : imageModel;
+        }
 
         /** Prompts can be pointed at a directory (e.g. {@code file:/etc/sanctum/prompts/}) to edit them without a rebuild. */
         public String promptsLocationOrDefault() {
@@ -37,7 +45,8 @@ public record SanctumProperties(
             int expandPerMinute,
             int encodePerMinute,
             int decodePerMinute,
-            int sessionCreatePerMinute) {}
+            int sessionCreatePerMinute,
+            int generatePerMinute) {}
 
     public record Stego(long maxPixels, int maxDimension) {}
 

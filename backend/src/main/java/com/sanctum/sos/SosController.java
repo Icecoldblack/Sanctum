@@ -5,6 +5,8 @@ import com.sanctum.sos.dto.SosDtos.DecodeResponse;
 import com.sanctum.sos.dto.SosDtos.EncodeResponse;
 import com.sanctum.sos.dto.SosDtos.ExpandRequest;
 import com.sanctum.sos.dto.SosDtos.ExpandResponse;
+import com.sanctum.sos.dto.SosDtos.GenerateRequest;
+import com.sanctum.sos.dto.SosDtos.GenerateResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -37,6 +39,13 @@ public class SosController {
     @PostMapping("/expand")
     public ExpandResponse expand(@Valid @RequestBody ExpandRequest request) {
         return new ExpandResponse(sosService.expand(request.sessionId(), request.shortInput()));
+    }
+
+    /** Generates a natural-looking carrier photo with AI and returns it as a PNG data URL. */
+    @PostMapping("/generate")
+    public GenerateResponse generate(@Valid @RequestBody GenerateRequest request) {
+        byte[] png = sosService.generateCarrier(request.sessionId(), request.scene());
+        return new GenerateResponse("data:image/png;base64," + Base64.getEncoder().encodeToString(png), png.length);
     }
 
     /**

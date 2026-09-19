@@ -52,6 +52,47 @@ class SosIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void generateReturnsPngCarrierThatCarriesAMessage() {
+        String id = createSession();
+        ResponseEntity<String> response = postJson("/api/sos/generate", Map.of("sessionId", id, "scene", "a red barn in snow"));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        JsonNode body = json(response);
+        String dataUrl = body.get("imageUrl").asText();
+        assertThat(dataUrl).startsWith("data:image/png;base64,");
+        byte[] png = Base64.getDecoder().decode(dataUrl.substring("data:image/png;base64,".length()));
+        assertThat(body.get("byteSize").asLong()).isEqualTo(png.length);
+        assertThat(Arrays.copyOf(png, 8)).isEqualTo(PNG_SIGNATURE);
+        // The scene is wrapped so the result reads as an everyday photo.
+        assertThat(images.lastPrompt()).contains("a red barn in snow").contains("smartphone photo").contains("No text");
+
+        // The generated image works as a carrier end to end.
+        ResponseEntity<String> encoded = multipart("/api/sos/encode",
+                parts(Map.of("sessionId", id, "message", "meet at the library", "image", file(png, "generated.png"))),
+                "application/json", String.class);
+        String stego = json(encoded).get("imageUrl").asText();
+        JsonNode decoded = decode(Base64.getDecoder().decode(stego.substring("data:image/png;base64,".length())), "x.png");
+        assertThat(decoded.get("decodedMessage").asText()).isEqualTo("meet at the library");
+    }
+
+    @Test
+    void generateWithoutSceneUsesARandomEverydayScene() {
+        String id = createSession();
+        assertThat(postJson("/api/sos/generate", Map.of("sessionId", id)).getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(SosService.RANDOM_SCENES).anySatisfy(scene -> assertThat(images.lastPrompt()).contains(scene));
+    }
+
+    @Test
+    void generateFailuresMapToClearStatuses() {
+        String id = createSession();
+        images.failNextCalls();
+        assertThat(postJson("/api/sos/generate", Map.of("sessionId", id)).getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+        assertThat(postJson("/api/sos/generate", Map.of("sessionId", UUID.randomUUID().toString())).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(postJson("/api/sos/generate", Map.of("sessionId", id, "scene", "x".repeat(301))).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
     void encodeWithDefaultCarrierReturnsJsonDataUrlThatDecodes() {
         String id = createSession();
         String message = "Need help 🆘\nCall me at the usual time.\n— M";

@@ -7,7 +7,8 @@ import { MessageComposer } from '@/components/sos/MessageComposer'
 import { CarrierPicker } from '@/components/sos/CarrierPicker'
 import { EncodeResult } from '@/components/sos/EncodeResult'
 import type { Carrier } from '@/components/sos/carriers'
-import { expandMessage, encodeMessage } from '@/api/sos'
+import { expandMessage, encodeMessage, generateCarrier } from '@/api/sos'
+import type { ApiError } from '@/types'
 import { useSession } from '@/hooks/useSession'
 import { capacityForPixels, measureImage } from '@/lib/capacity'
 import { toCarrierPng } from '@/lib/toPng'
@@ -26,6 +27,8 @@ export function Sos() {
   const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null)
   const [customCarrier, setCustomCarrier] = useState<Carrier | null>(null)
   const [customError, setCustomError] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generateError, setGenerateError] = useState<string | null>(null)
   const [capacity, setCapacity] = useState<number | null>(null)
   const [isEncoding, setIsEncoding] = useState(false)
   const [encodeError, setEncodeError] = useState<string | null>(null)
@@ -83,6 +86,38 @@ export function Sos() {
     setCustomCarrier(carrier)
     setSelectedCarrier(carrier)
     setResult(null)
+  }
+
+  async function handleGenerate(scene: string) {
+    if (!session) return
+    setIsGenerating(true)
+    setGenerateError(null)
+    setCustomError(null)
+    try {
+      const { imageUrl } = await generateCarrier(session.sessionId, scene)
+      // A blob URL like an uploaded photo, so the same selection and cleanup paths apply.
+      const png = await (await fetch(imageUrl)).blob()
+      const carrier: Carrier = {
+        id: `generated-${Date.now()}`,
+        label: scene.trim() ? `AI photo: ${scene.trim()}` : 'AI photo',
+        src: URL.createObjectURL(png),
+        alt: scene.trim() ? `an AI-created photo of ${scene.trim()}` : 'an AI-created everyday photo',
+      }
+      setCustomCarrier(carrier)
+      setSelectedCarrier(carrier)
+      setResult(null)
+    } catch (err) {
+      const code = (err as Partial<ApiError>)?.code
+      setGenerateError(
+        code === 'rate_limited'
+          ? 'You’ve made several photos in a short time. Wait a minute and try again.'
+          : code === 'network_error'
+            ? 'Couldn’t reach the server. Check your connection and try again.'
+            : 'The photo couldn’t be created. Try again, describe it differently, or pick one above.',
+      )
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   async function handleExpand() {
@@ -168,6 +203,9 @@ export function Sos() {
                 custom={customCarrier}
                 onCustomSelect={handleCustomSelect}
                 error={customError}
+                onGenerate={handleGenerate}
+                generating={isGenerating}
+                generateError={generateError}
               />
 
               <p className="text-xs text-on-surface-variant/70 mb-8 italic">

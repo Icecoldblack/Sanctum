@@ -68,6 +68,7 @@ sanctum:
     api-key: ${GEMINI_API_KEY:}
     base-url: https://generativelanguage.googleapis.com
     model: gemini-3.6-flash
+    image-model: gemini-3.1-flash-image   # SOS carrier photos
     prompts-location: classpath:prompts/
     timeout-seconds: 30
     max-history-turns: 20
@@ -78,6 +79,7 @@ sanctum:
     encode-per-minute: 10
     decode-per-minute: 10
     session-create-per-minute: 5
+    generate-per-minute: 5     # image generation is slow and costs the most
   stego:
     max-pixels: 20000000
     max-dimension: 8192

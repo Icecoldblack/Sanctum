@@ -2,6 +2,7 @@ package com.sanctum.sos;
 
 import com.sanctum.ai.AiService;
 import com.sanctum.ai.AiService.AiMessage;
+import com.sanctum.ai.ImageGenerator;
 import com.sanctum.ai.PromptLibrary;
 import com.sanctum.common.exceptions.Errors;
 import com.sanctum.config.RateLimitConfig;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,37 @@ import org.springframework.stereotype.Service;
 public class SosService {
 
     public static final int MAX_MESSAGE_CHARS = 4000;
+    public static final int MAX_SCENE_CHARS = 300;
+
+    /** "Surprise me" scenes: everyday, unremarkable, nothing that hints at why the photo exists. */
+    static final List<String> RANDOM_SCENES = List.of(
+            "a quiet lake at sunset with a small wooden dock",
+            "a forest trail in autumn with fallen leaves",
+            "ocean waves rolling onto a sandy beach on a cloudy afternoon",
+            "a field of wildflowers under a blue sky",
+            "a snowy pine forest in soft morning light",
+            "a small creek running over mossy rocks",
+            "rolling green hills with scattered trees",
+            "a potted plant on a sunny windowsill",
+            "a cup of coffee on a wooden cafe table",
+            "a city park with a bench under large trees",
+            "a garden with blooming roses after rain",
+            "a mountain view from a hiking trail on a clear day");
+
+    /** Wrapped around every scene so results look like someone's camera roll, not AI art. */
+    static String photoPrompt(String scene) {
+        return "A casual, ordinary smartphone photo of " + scene + ". "
+                + "Realistic and candid, natural lighting, slightly imperfect framing, like a picture from "
+                + "someone's camera roll. No text, no captions, no watermarks, no logos, no visible faces. "
+                + "Not stylized, not illustrated, not a painting.";
+    }
 
     private final SessionService sessionService;
     private final SteganographyService steganography;
     private final AiService ai;
     private final PromptLibrary prompts;
     private final RateLimitConfig rateLimiter;
+    private final ImageGenerator imageGenerator;
     private final byte[] defaultCarrier;
 
     public SosService(
@@ -35,12 +62,14 @@ public class SosService {
             SteganographyService steganography,
             AiService ai,
             PromptLibrary prompts,
-            RateLimitConfig rateLimiter) {
+            RateLimitConfig rateLimiter,
+            ImageGenerator imageGenerator) {
         this.sessionService = sessionService;
         this.steganography = steganography;
         this.ai = ai;
         this.prompts = prompts;
         this.rateLimiter = rateLimiter;
+        this.imageGenerator = imageGenerator;
         this.defaultCarrier = loadDefaultCarrier();
     }
 
@@ -62,6 +91,20 @@ public class SosService {
         }
         byte[] carrier = carrierPng == null || carrierPng.length == 0 ? defaultCarrier : carrierPng;
         return steganography.embed(carrier, message);
+    }
+
+    /**
+     * Generates a fresh, natural-looking photo to hide a message in. Nothing is stored.
+     *
+     * @param scene what the photo should show, or blank for a random everyday scene
+     */
+    public byte[] generateCarrier(String sessionId, String scene) {
+        SessionEntity session = sessionService.requireActive(sessionId);
+        rateLimiter.check(Limit.GENERATE, session.getSessionId().toString());
+        String chosen = scene == null || scene.isBlank()
+                ? RANDOM_SCENES.get(ThreadLocalRandom.current().nextInt(RANDOM_SCENES.size()))
+                : scene.trim();
+        return imageGenerator.generatePng(photoPrompt(chosen));
     }
 
     /** Decoding needs no session: the recipient of an image usually has none. Limited per client IP. */

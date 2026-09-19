@@ -63,5 +63,11 @@ public class StubAiService implements AiService {
         public StubAiService stubAiService() {
             return new StubAiService();
         }
+
+        @Bean
+        @Primary
+        public StubImageGenerator stubImageGenerator() {
+            return new StubImageGenerator();
+        }
     }
 }

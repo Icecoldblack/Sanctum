@@ -58,9 +58,13 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected StubAiService ai;
 
+    @Autowired
+    protected StubImageGenerator images;
+
     @BeforeEach
     void resetStub() {
         ai.reset();
+        images.reset();
     }
 
     // --- HTTP helpers -------------------------------------------------------------------------

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RateLimitConfig {
 
-    public enum Limit { CHAT, EXPAND, ENCODE, DECODE, SESSION_CREATE }
+    public enum Limit { CHAT, EXPAND, ENCODE, DECODE, SESSION_CREATE, GENERATE }
 
     private static final Duration WINDOW = Duration.ofMinutes(1);
     private static final Duration IDLE_EVICTION = Duration.ofMinutes(5);
@@ -36,7 +36,8 @@ public class RateLimitConfig {
                 Limit.EXPAND, rl.expandPerMinute(),
                 Limit.ENCODE, rl.encodePerMinute(),
                 Limit.DECODE, rl.decodePerMinute(),
-                Limit.SESSION_CREATE, rl.sessionCreatePerMinute());
+                Limit.SESSION_CREATE, rl.sessionCreatePerMinute(),
+                Limit.GENERATE, rl.generatePerMinute());
     }
 
     /** Consumes one token, or throws {@link RateLimitedException} carrying a Retry-After in seconds. */

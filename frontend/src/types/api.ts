@@ -23,6 +23,11 @@ export interface EncodeRequest {
   image: Blob
 }
 
+export interface GenerateResponse {
+  imageUrl: string
+  byteSize: number
+}
+
 export interface EncodeResponse {
   imageUrl: string
   byteSize: number

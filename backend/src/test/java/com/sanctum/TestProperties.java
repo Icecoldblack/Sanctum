@@ -36,8 +36,8 @@ public final class TestProperties {
         return new SanctumProperties(
                 new SanctumProperties.Session(24, 7),
                 new SanctumProperties.Encryption(key),
-                new SanctumProperties.Ai(apiKey, baseUrl, "gemini-test-model", timeoutSeconds, 20, 1024, null),
-                new SanctumProperties.RateLimit(perMinute, perMinute, perMinute, perMinute, perMinute),
+                new SanctumProperties.Ai(apiKey, baseUrl, "gemini-test-model", timeoutSeconds, 20, 1024, null, null),
+                new SanctumProperties.RateLimit(perMinute, perMinute, perMinute, perMinute, perMinute, perMinute),
                 new SanctumProperties.Stego(maxPixels, maxDim),
                 new SanctumProperties.Cors(List.of("http://localhost:5173")),
                 new SanctumProperties.Crisis(List.of("Call 911.", "Hotline 1-800-799-7233.")));

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Icon } from '@/components/shared/Icon'
 import { carriers, type Carrier } from '@/components/sos/carriers'
 
@@ -9,6 +9,10 @@ interface CarrierPickerProps {
   custom: Carrier | null
   onCustomSelect: (file: File) => void
   error?: string | null
+  /** Creates a new photo with AI. A blank scene means "surprise me". */
+  onGenerate: (scene: string) => void
+  generating: boolean
+  generateError?: string | null
 }
 
 export function CarrierPicker({
@@ -17,8 +21,13 @@ export function CarrierPicker({
   custom,
   onCustomSelect,
   error,
+  onGenerate,
+  generating,
+  generateError,
 }: CarrierPickerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const sceneId = useId()
+  const [scene, setScene] = useState('')
   const options = custom ? [...carriers, custom] : carriers
 
   return (
@@ -87,6 +96,50 @@ export function CarrierPicker({
           {error}
         </p>
       )}
+
+      <form
+        className="mb-6 rounded-2xl bg-surface-container p-4"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (!generating) onGenerate(scene)
+        }}
+      >
+        <label htmlFor={sceneId} className="flex items-center gap-2 text-sm font-bold text-on-surface">
+          <Icon name="auto_awesome" className="text-base text-primary" />
+          Or create a new photo with AI
+        </label>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            id={sceneId}
+            type="text"
+            value={scene}
+            onChange={(e) => setScene(e.target.value)}
+            maxLength={300}
+            disabled={generating}
+            autoComplete="off"
+            placeholder="Describe a scene, e.g. a beach at sunset"
+            className="min-h-11 min-w-0 flex-1 rounded-full border-none bg-surface-container-lowest px-4 text-sm text-on-surface placeholder:text-outline-variant focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={generating}
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-on-primary transition-opacity disabled:opacity-60"
+          >
+            <Icon name={generating ? 'hourglass_top' : scene.trim() ? 'image' : 'casino'} className="text-base" />
+            {generating ? 'Creating…' : scene.trim() ? 'Create photo' : 'Surprise me'}
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-on-surface-variant" aria-live="polite">
+          {generating
+            ? 'Creating a natural-looking photo. This takes about 10 seconds.'
+            : 'Leave it blank for a random everyday photo. Your message is never sent to the AI.'}
+        </p>
+        {generateError && (
+          <p role="alert" className="mt-2 text-xs font-medium text-error">
+            {generateError}
+          </p>
+        )}
+      </form>
     </>
   )
 }

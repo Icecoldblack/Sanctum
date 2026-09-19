@@ -14,6 +14,14 @@ public final class SosDtos {
 
     public record ExpandResponse(String expandedMessage) {}
 
+    /** {@code scene} is optional: blank means "surprise me". */
+    public record GenerateRequest(
+            @NotBlank @Size(max = 64) String sessionId,
+            @Size(max = 300) String scene) {}
+
+    /** A generated carrier photo as a PNG data URL. Nothing is stored server-side. */
+    public record GenerateResponse(String imageUrl, long byteSize) {}
+
     /** JSON form of /encode: the PNG as a data URL, so nothing is stored server-side. */
     public record EncodeResponse(String imageUrl, long byteSize) {}
 
