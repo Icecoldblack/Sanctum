@@ -25,7 +25,7 @@ export function Navbar({ quickExitIcon = false }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 bg-[#fafaf5]/80 backdrop-blur-md shadow-sm shadow-[#2f342e]/5">
+      <nav className="print:hidden fixed top-0 w-full z-50 bg-[#fafaf5]/80 backdrop-blur-md shadow-sm shadow-[#2f342e]/5">
         <div className="flex justify-between items-center gap-2 px-4 sm:px-6 py-3 w-full max-w-screen-2xl mx-auto">
           <NavLink to="/" className="flex min-w-0 items-center gap-2 text-xl font-bold tracking-tighter text-[#4c6557]">
             <AppIcon icon={disguise.icon} name={disguise.name} size={28} />

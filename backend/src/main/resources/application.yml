@@ -31,7 +31,7 @@ spring:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
 server:
-  port: 8080
+  port: ${PORT:8080}          # hosts like Render, Railway and Cloud Run assign PORT
   shutdown: graceful
   error:
     include-stacktrace: never

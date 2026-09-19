@@ -2,6 +2,8 @@ import { NavLink } from 'react-router-dom'
 import { navItems } from '@/components/layout/nav-items'
 import { Icon } from '@/components/shared/Icon'
 import { HOTLINE_TEL } from '@/lib/hotlines'
+import { usePreferences } from '@/features/preferences/PreferencesContext'
+import { activeDisguise } from '@/features/preferences/preferences'
 
 type HelpVariant = 'button' | 'card' | 'advocate'
 
@@ -10,11 +12,11 @@ interface SidebarProps {
 }
 
 export function Sidebar({ helpVariant = 'button' }: SidebarProps) {
+  const { name } = activeDisguise(usePreferences().prefs)
   return (
-    <aside className="hidden lg:flex h-screen w-64 fixed left-0 top-0 pt-20 bg-[#edefe8] flex-col gap-4 py-8 z-40">
+    <aside className="print:hidden hidden lg:flex h-screen w-64 fixed left-0 top-0 pt-20 bg-[#edefe8] flex-col gap-4 py-8 z-40">
       <div className="px-6 mb-6">
-        <h2 className="text-lg font-bold text-[#4c6557] font-headline">Sanctuary</h2>
-        <p className="text-xs text-on-surface-variant">Your safe space</p>
+        <h2 className="truncate text-lg font-bold text-[#4c6557] font-headline">{name}</h2>
       </div>
       <nav className="flex flex-col gap-1">
         {navItems.map(({ to, label, icon }) => (

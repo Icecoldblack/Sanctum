@@ -72,7 +72,7 @@ export function CarrierPicker({
       <input
         ref={inputRef}
         type="file"
-        accept="image/png,image/jpeg"
+        accept="image/*"
         className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0]

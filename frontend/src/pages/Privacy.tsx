@@ -25,7 +25,7 @@ const sections: Section[] = [
       'Chat messages are sent to an AI model to generate a reply, then stored against your session identifier so the conversation holds together while you use it. When the session expires, they go with it.',
       'Steganography runs on our server: the carrier image and your message are combined in memory, the finished image is returned to you directly, and neither the original text nor the result is written to disk.',
       'Decoding is entirely stateless. An uploaded image is read in memory and discarded when the response is sent. No session is required.',
-      'Quick Exit clears this site’s local and session storage and redirects to a weather search. Three quick presses of Esc does the same thing from anywhere in the app.',
+      'Quick Exit erases your chats from our server, clears this tab’s session, and sends you to an everyday site such as a weather or news page. Pressing Back lands on another everyday site, not on Sanctum. Your safety settings (disguise, shortcut) stay on the device so they keep working. The shortcut, three quick presses of Esc by default, can be changed in Safety settings.',
     ],
   },
   {

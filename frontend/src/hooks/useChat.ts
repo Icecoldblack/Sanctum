@@ -8,18 +8,27 @@ export function useChat(variant: ChatVariant) {
   const [messages, setMessages] = useState<ChatMessage[]>(
     () => session?.conversations[variant] ?? [],
   )
+  // Latest messages, readable after an await without going through a state updater.
+  const messagesRef = useRef(messages)
+  useEffect(() => {
+    messagesRef.current = messages
+  }, [messages])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // The session resolves asynchronously, so the first render usually has none.
   // Adopt its history once, but never clobber messages typed while it loaded.
+  // A later, different session means the data was erased: show that one's (empty) history.
   const hydratedFor = useRef<string | null>(null)
   useEffect(() => {
     if (!session || hydratedFor.current === session.sessionId) return
+    const replaced = hydratedFor.current !== null
     hydratedFor.current = session.sessionId
-    const stored = session.conversations[variant]
-    if (stored?.length) {
+    const stored = session.conversations[variant] ?? []
+    if (replaced) {
+      setMessages(stored)
+    } else if (stored.length) {
       setMessages((prev) => (prev.length ? prev : stored))
     }
   }, [session, variant])
@@ -34,21 +43,23 @@ export function useChat(variant: ChatVariant) {
       timestamp: new Date().toISOString(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    messagesRef.current = [...messagesRef.current, userMessage]
+    setMessages(messagesRef.current)
     setInput('')
     setError(null)
     setIsLoading(true)
 
     try {
       const response = await sendChatMessage(variant, session.sessionId, trimmed)
-      setMessages((prev) => {
-        const next: ChatMessage[] = [
-          ...prev,
-          { role: 'assistant', content: response.reply, timestamp: response.timestamp },
-        ]
-        recordMessages(variant, next)
-        return next
-      })
+      const next: ChatMessage[] = [
+        ...messagesRef.current,
+        { role: 'assistant', content: response.reply, timestamp: response.timestamp },
+      ]
+      messagesRef.current = next
+      setMessages(next)
+      // Outside the state updater: updating another component's state from inside one is a React
+      // error. It also records the reply if the person has already moved to another page.
+      recordMessages(variant, next)
     } catch {
       setError('Your message could not be sent. Check your connection and try again.')
     } finally {
@@ -56,5 +67,5 @@ export function useChat(variant: ChatVariant) {
     }
   }, [input, session, isLoading, variant, recordMessages])
 
-  return { messages, input, setInput, send, isLoading, error }
+  return { messages, input, setInput, send, isLoading, error, ready: Boolean(session) }
 }

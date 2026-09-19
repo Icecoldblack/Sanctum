@@ -2,7 +2,7 @@ import type { ChatMessage } from '@/types'
 
 const LABELS: Record<string, { user: string; assistant: string }> = {
   legal: { user: 'You', assistant: 'Compass' },
-  therapy: { user: 'You', assistant: 'Sanctum AI' },
+  therapy: { user: 'You', assistant: 'Haven' },
 }
 
 function formatTimestamp(iso: string): string {
@@ -13,7 +13,7 @@ function formatTimestamp(iso: string): string {
 export function conversationToText(variant: string, messages: ChatMessage[]): string {
   const labels = LABELS[variant] ?? { user: 'You', assistant: 'Sanctum' }
   const header = [
-    `Sanctum — ${variant} conversation`,
+    'Conversation notes',
     `Exported ${new Date().toLocaleString()}`,
     '',
     'This transcript is not legal or medical advice. Anyone who finds this file can',
@@ -43,7 +43,8 @@ export function downloadConversation(variant: string, messages: ChatMessage[]): 
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = `sanctum-${variant}-${new Date().toISOString().slice(0, 10)}.txt`
+  // Neutral name: the file sits in Downloads, where anyone with the device can see it.
+  anchor.download = `notes-${new Date().toISOString().slice(0, 10)}.txt`
   document.body.appendChild(anchor)
   anchor.click()
   anchor.remove()

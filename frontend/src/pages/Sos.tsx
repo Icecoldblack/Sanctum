@@ -10,8 +10,10 @@ import type { Carrier } from '@/components/sos/carriers'
 import { expandMessage, encodeMessage } from '@/api/sos'
 import { useSession } from '@/hooks/useSession'
 import { capacityForPixels, measureImage } from '@/lib/capacity'
+import { toCarrierPng } from '@/lib/toPng'
 
-const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+/** Originals can be larger than the upload limit: they are converted and shrunk before upload. */
+const MAX_PICK_BYTES = 25 * 1024 * 1024
 
 export function Sos() {
   const { session } = useSession()
@@ -59,16 +61,23 @@ export function Sos() {
     }
   }, [customCarrier])
 
-  function handleCustomSelect(file: File) {
+  async function handleCustomSelect(file: File) {
     setCustomError(null)
-    if (file.size > MAX_UPLOAD_BYTES) {
-      setCustomError('That photo is larger than 10 MB. Choose a smaller one.')
+    if (file.size > MAX_PICK_BYTES) {
+      setCustomError('That photo is larger than 25 MB. Choose a smaller one.')
+      return
+    }
+    let png: Blob
+    try {
+      png = await toCarrierPng(file)
+    } catch {
+      setCustomError('That photo couldn’t be used. Try a different one, such as a JPG or PNG.')
       return
     }
     const carrier: Carrier = {
       id: `custom-${Date.now()}`,
       label: `Your photo (${file.name})`,
-      src: URL.createObjectURL(file),
+      src: URL.createObjectURL(png),
       alt: 'the photo you selected as a carrier image',
     }
     setCustomCarrier(carrier)
@@ -107,7 +116,7 @@ export function Sos() {
   }
 
   const canEncode =
-    Boolean(finalMessage.trim()) && Boolean(selectedCarrier) && !overCapacity
+    Boolean(session) && Boolean(finalMessage.trim()) && Boolean(selectedCarrier) && !overCapacity
 
   return (
     <>
@@ -134,6 +143,7 @@ export function Sos() {
               expandedMessage={expandedMessage}
               onExpand={handleExpand}
               isExpanding={isExpanding}
+              ready={Boolean(session)}
               expandError={expandError}
               capacity={capacity}
             />
@@ -235,10 +245,11 @@ export function Sos() {
             </div>
             <div className="flex flex-col gap-3">
               <Icon name="visibility_off" className="text-primary" />
-              <h5 className="font-bold">Incognito Mode</h5>
+              <h5 className="font-bold">Quick Exit</h5>
               <p className="text-sm text-on-surface-variant">
-                Your browser history is automatically cleared of all session data once you click
-                'Quick Exit'.
+                Leaves instantly and buries this site behind decoy pages, so pressing Back won't
+                bring it up. Your browser's history list can still show it, so use a private window
+                when you can.
               </p>
             </div>
             <div className="flex flex-col gap-3">

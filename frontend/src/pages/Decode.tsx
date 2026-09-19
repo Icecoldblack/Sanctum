@@ -57,7 +57,7 @@ export function Decode() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="flex-grow pt-24 pb-28 md:pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
+      <main className="flex-grow pt-24 pb-28 lg:pb-12 lg:ml-64 px-6 md:px-12 max-w-6xl mx-auto w-full">
 
         <header className="mb-12 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4">
@@ -115,7 +115,8 @@ export function Decode() {
               <img
                 alt="Serene nature background"
                 className="w-full h-full object-cover"
-                src="/images/decode-fern.png"
+                loading="lazy"
+                src="/images/decode-fern.webp"
               />
             </div>
             <div className="space-y-4">

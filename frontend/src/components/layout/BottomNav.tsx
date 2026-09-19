@@ -4,7 +4,7 @@ import { Icon } from '@/components/shared/Icon'
 
 export function BottomNav() {
   return (
-    <div className="md:hidden fixed bottom-0 w-full bg-surface-container border-t-0 py-3 px-6 flex justify-around items-center z-50">
+    <div className="print:hidden lg:hidden fixed bottom-0 w-full bg-surface-container border-t-0 py-3 px-6 flex justify-around items-center z-50">
       {navItems.map(({ to, label, icon }) => (
         <NavLink key={to} to={to} className="flex flex-col items-center gap-1">
           {({ isActive }) => (
