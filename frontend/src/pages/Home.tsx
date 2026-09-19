@@ -22,15 +22,15 @@ export function Home() {
               <img
                 alt="Peaceful nature"
                 className="w-full h-full object-cover"
-                src="/images/hero-forest.png"
+                src="/images/hero-forest.webp"
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent z-10" />
-            <div className="relative z-20 max-w-2xl px-12 py-16">
+            <div className="relative z-20 max-w-2xl px-6 py-12 sm:px-12 sm:py-16">
               <span className="inline-block px-4 py-1.5 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold tracking-widest uppercase mb-6">
                 Private • Secure • Immediate
               </span>
-              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tighter text-on-surface mb-6 leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter text-on-surface mb-6 leading-tight">
                 Your safety is <br />
                 <span className="text-primary italic">your own.</span>
               </h1>
@@ -62,7 +62,7 @@ export function Home() {
         <Reveal>
           <section className="max-w-screen-xl mx-auto px-6 mb-32">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 bg-surface-container rounded-3xl p-10 flex flex-col justify-between relative overflow-hidden">
+              <div className="md:col-span-2 bg-surface-container rounded-3xl p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden">
                 <div className="relative z-10">
                   <h2 className="text-3xl font-bold text-primary mb-4">Total Privacy, Guaranteed</h2>
                   <p className="text-on-surface-variant max-w-md text-lg leading-relaxed">
@@ -71,7 +71,7 @@ export function Home() {
                     this at all can carry its own risk.
                   </p>
                 </div>
-                <div className="mt-12 flex items-center gap-6 z-10">
+                <div className="mt-10 flex flex-wrap items-center gap-3 sm:gap-6 z-10">
                   <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2 rounded-xl">
                     <Icon name="lock_reset" className="text-primary" />
                     <span className="text-sm font-medium">Session-Only Storage</span>
@@ -83,7 +83,7 @@ export function Home() {
                 </div>
                 <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-primary-fixed-dim/20 blur-3xl" />
               </div>
-              <div className="bg-tertiary-container rounded-3xl p-10 flex flex-col justify-center items-center text-center">
+              <div className="bg-tertiary-container rounded-3xl p-6 sm:p-10 flex flex-col justify-center items-center text-center">
                 <div className="w-16 h-16 rounded-2xl bg-on-tertiary-container/10 flex items-center justify-center mb-6">
                   <Icon name="vpn_key" className="text-on-tertiary-container text-4xl" />
                 </div>
@@ -99,8 +99,8 @@ export function Home() {
         {/* The Three Tools Section */}
         <section id="toolkit" className="max-w-screen-xl mx-auto px-6 mb-32">
           <div className="mb-16">
-            <h2 className="text-4xl font-extrabold tracking-tight text-on-surface text-center">
-              Felling Trapped?
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-on-surface text-center">
+              Feeling Trapped?
             </h2>
             <p className="text-on-surface-variant text-center max-w-2xl mx-auto mt-4 leading-relaxed">
               Millions of women in the U.S. live with the anxiety of feeling unsafe at home,
@@ -113,8 +113,8 @@ export function Home() {
             {/* Tool 1: SOS Messenger */}
             <Reveal>
               <div className="flex flex-col md:flex-row items-center gap-12 group">
-                <div className="w-full md:w-1/2 bg-surface-container-low rounded-[2rem] p-12 relative overflow-hidden shadow-sm">
-                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                <div className="w-full md:w-1/2 bg-surface-container-low rounded-[2rem] p-8 sm:p-12 relative overflow-hidden shadow-sm">
+                  <div aria-hidden="true" className="hidden md:block absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
                     <Icon name="emergency_home" className="text-[120px]" />
                   </div>
                   <h3 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
@@ -149,8 +149,8 @@ export function Home() {
             {/* Tool 2: The Sanctuary */}
             <Reveal delay={100}>
               <div className="flex flex-col md:flex-row-reverse items-center gap-12 group">
-                <div className="w-full md:w-1/2 bg-surface-container rounded-[2rem] p-12 relative overflow-hidden shadow-sm border border-primary-fixed/30">
-                  <div className="absolute top-0 left-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                <div className="w-full md:w-1/2 bg-surface-container rounded-[2rem] p-8 sm:p-12 relative overflow-hidden shadow-sm border border-primary-fixed/30">
+                  <div aria-hidden="true" className="hidden md:block absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
                     <Icon name="psychology" className="text-[120px]" />
                   </div>
                   <h3 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
@@ -174,7 +174,8 @@ export function Home() {
                   <img
                     alt="Calm yoga studio"
                     className="w-full h-full object-cover"
-                    src="/images/tool-therapy.png"
+                    loading="lazy"
+                    src="/images/tool-therapy.webp"
                   />
                 </div>
               </div>
@@ -183,8 +184,8 @@ export function Home() {
             {/* Tool 3: Compass */}
             <Reveal delay={200}>
               <div className="flex flex-col md:flex-row items-center gap-12 group">
-                <div className="w-full md:w-1/2 bg-surface-container-high rounded-[2rem] p-12 relative overflow-hidden shadow-sm">
-                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                <div className="w-full md:w-1/2 bg-surface-container-high rounded-[2rem] p-8 sm:p-12 relative overflow-hidden shadow-sm">
+                  <div aria-hidden="true" className="hidden md:block absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
                     <Icon name="explore" className="text-[120px]" />
                   </div>
                   <h3 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
@@ -221,9 +222,9 @@ export function Home() {
         {/* Final CTA / Safety Disclaimer */}
         <Reveal>
           <section className="max-w-screen-md mx-auto px-6 mb-20 text-center">
-            <div className="bg-surface-container-lowest border border-outline-variant/10 p-12 rounded-[3rem] shadow-xl">
+            <div className="bg-surface-container-lowest border border-outline-variant/10 p-8 sm:p-12 rounded-[2rem] sm:rounded-[3rem] shadow-xl">
               <Icon name="info" className="text-error text-4xl mb-6" />
-              <h2 className="text-3xl font-bold text-on-surface mb-6">Emergency Reminder</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-on-surface mb-6">Emergency Reminder</h2>
               <p className="text-on-surface-variant text-lg mb-10 leading-relaxed">
                 If you are in immediate physical danger, please contact local emergency services.
                 This platform is a support tool, not a replacement for emergency intervention.

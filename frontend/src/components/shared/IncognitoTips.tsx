@@ -15,7 +15,7 @@ const tips = [
   {
     icon: 'keyboard',
     title: 'Press Esc three times to leave',
-    body: 'Anywhere in Sanctum, three quick taps of Esc clears local data and redirects to a weather search.',
+    body: 'Anywhere in Sanctum, three quick taps of Esc leaves for an everyday site and erases your chats. You can change the shortcut in Safety settings.',
   },
   {
     icon: 'history',

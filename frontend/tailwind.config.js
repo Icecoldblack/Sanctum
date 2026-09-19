@@ -58,9 +58,9 @@ export default {
         'on-secondary-fixed-variant': '#4b5d71',
       },
       fontFamily: {
-        headline: ['Manrope', 'sans-serif'],
-        body: ['Manrope', 'sans-serif'],
-        label: ['Manrope', 'sans-serif'],
+        headline: ['Manrope Variable', 'Manrope', 'sans-serif'],
+        body: ['Manrope Variable', 'Manrope', 'sans-serif'],
+        label: ['Manrope Variable', 'Manrope', 'sans-serif'],
       },
       keyframes: {
         'dialog-in': {

@@ -7,6 +7,8 @@ interface MessageComposerProps {
   expandedMessage: string
   onExpand: () => void
   isExpanding: boolean
+  /** False until the session has loaded; the AI needs one. */
+  ready: boolean
   expandError: string | null
   /** Characters the selected carrier can hold, or null if none is chosen yet. */
   capacity: number | null
@@ -18,6 +20,7 @@ export function MessageComposer({
   expandedMessage,
   onExpand,
   isExpanding,
+  ready,
   expandError,
   capacity,
 }: MessageComposerProps) {
@@ -51,7 +54,7 @@ export function MessageComposer({
         <button
           type="button"
           onClick={onExpand}
-          disabled={isExpanding || !shortInput.trim()}
+          disabled={!ready || isExpanding || !shortInput.trim()}
           className="mt-4 flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all group disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <span>{isExpanding ? 'Expanding…' : 'Expand with AI'}</span>

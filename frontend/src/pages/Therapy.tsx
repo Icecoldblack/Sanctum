@@ -8,15 +8,18 @@ import { useAutoResize } from '@/hooks/useAutoResize'
 import { BreathingExercise } from '@/components/shared/BreathingExercise'
 import { CrisisNumbers } from '@/components/shared/CrisisNumbers'
 import { quickExit } from '@/features/quick-exit/quickExit'
+import { MessageText } from '@/components/shared/MessageText'
 
 const groundingSteps = [
-  { n: 5, label: 'Things you can see', opacity: '' },
-  { n: 4, label: 'Things you can touch', opacity: 'opacity-60' },
-  { n: 3, label: 'Things you can hear', opacity: 'opacity-40' },
+  { n: 5, label: 'Things you can see' },
+  { n: 4, label: 'Things you can touch' },
+  { n: 3, label: 'Things you can hear' },
+  { n: 2, label: 'Things you can smell' },
+  { n: 1, label: 'Thing you can taste' },
 ]
 
 export function Therapy() {
-  const { messages, input, setInput, send, isLoading, error } = useChat('therapy')
+  const { messages, input, setInput, send, isLoading, error, ready } = useChat('therapy')
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useAutoResize(input)
   const [numbersOpen, setNumbersOpen] = useState(false)
@@ -36,7 +39,7 @@ export function Therapy() {
     <div className="bg-background text-on-surface">
       <Navbar />
       <Sidebar helpVariant="card" />
-      <main className="lg:ml-64 pt-16 pb-24 md:pb-8 flex flex-col">
+      <main className="lg:ml-64 pt-16 pb-24 lg:pb-8 flex flex-col">
         {/* Situation Summary Header */}
         <header className="px-4 py-4 md:px-12 md:py-8">
           <div className="max-w-4xl mx-auto">
@@ -61,7 +64,7 @@ export function Therapy() {
                 <img
                   alt=""
                   className="w-full h-full object-cover grayscale-[20%] opacity-80"
-                  src="/images/therapy-leaves.png"
+                  src="/images/therapy-leaves.webp"
                 />
               </div>
             </div>
@@ -91,7 +94,7 @@ export function Therapy() {
                         I'm here to listen. Say as much or as little as you're ready to.
                       </div>
                       <div className="text-[10px] text-on-surface-variant px-1 italic">
-                        Sanctum AI
+                        Haven
                       </div>
                     </div>
                   </div>
@@ -122,12 +125,16 @@ export function Therapy() {
                               : 'bg-surface-container-high text-on-surface rounded-tl-none'
                           }`}
                         >
-                          {message.content}
+                          {isUser ? (
+                            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                          ) : (
+                            <MessageText text={message.content} />
+                          )}
                         </div>
                         <div
                           className={`text-[10px] text-on-surface-variant px-1 italic ${isUser ? 'text-right' : ''}`}
                         >
-                          {isUser ? 'You' : 'Sanctum AI'}
+                          {isUser ? 'You' : 'Haven'}
                         </div>
                       </div>
                     </div>
@@ -170,13 +177,13 @@ export function Therapy() {
                     autoComplete="off"
                     autoCorrect="off"
                     spellCheck={false}
-                    className="w-full bg-surface-container px-6 py-4 rounded-full border-none focus:ring-2 focus:ring-primary/20 text-sm placeholder:text-on-surface-variant/60 resize-none max-h-[160px]"
+                    className="w-full bg-surface-container px-6 py-4 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm placeholder:text-on-surface-variant/60 resize-none max-h-[160px]"
                     placeholder="Type what's on your mind..."
                   />
                   <button
                     type="button"
                     onClick={send}
-                    disabled={isLoading || !input.trim()}
+                    disabled={!ready || isLoading || !input.trim()}
                     aria-label="Send message"
                     className="absolute right-2 w-11 h-11 shrink-0 aspect-square flex items-center justify-center bg-primary text-on-primary rounded-full hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
                   >
@@ -198,10 +205,10 @@ export function Therapy() {
                   </h3>
                 </div>
                 <ul className="space-y-3">
-                  {groundingSteps.map(({ n, label, opacity }) => (
+                  {groundingSteps.map(({ n, label }) => (
                     <li
                       key={n}
-                      className={`flex items-center gap-3 text-xs text-on-tertiary-fixed-variant ${opacity}`}
+                      className="flex items-center gap-3 text-xs text-on-tertiary-fixed-variant"
                     >
                       <span className="w-5 h-5 rounded-full bg-tertiary-fixed-dim flex items-center justify-center text-[10px] font-bold">
                         {n}
@@ -216,7 +223,7 @@ export function Therapy() {
                 <img
                   alt=""
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  src="/images/therapy-ocean.png"
+                  src="/images/therapy-ocean.webp"
                 />
                 <BreathingExercise />
               </div>

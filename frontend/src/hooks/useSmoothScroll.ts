@@ -16,7 +16,7 @@ export function getLenis() {
  * synced so mobile keeps its native momentum.
  */
 export function useSmoothScroll() {
-  const { pathname } = useLocation()
+  const { pathname, hash } = useLocation()
 
   useEffect(() => {
     // Respect the OS setting: hijacking the wheel is exactly what people who
@@ -39,8 +39,19 @@ export function useSmoothScroll() {
     }
   }, [])
 
-  // Route changes should land at the top instantly, not glide there.
+  // Route changes should land at the top instantly, not glide there. With reduced motion there is
+  // no Lenis instance, so fall back to the native scroll. A link to a section (/privacy#terms)
+  // lands on that section instead.
   useEffect(() => {
-    lenis?.scrollTo(0, { immediate: true })
+    const target = hash ? document.getElementById(decodeURIComponent(hash.slice(1))) : null
+    if (target) {
+      target.scrollIntoView()
+    } else if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+    } else {
+      window.scrollTo(0, 0)
+    }
+    // Only on a new page: same-page anchor clicks are left to Lenis so they still glide.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 }

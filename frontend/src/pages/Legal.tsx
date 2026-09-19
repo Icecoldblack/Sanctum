@@ -1,14 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { Icon } from '@/components/shared/Icon'
 import { useChat } from '@/hooks/useChat'
 import { downloadConversation } from '@/lib/exportConversation'
+import { Dialog } from '@/components/shared/Dialog'
+import { MessageText } from '@/components/shared/MessageText'
 
 export function Legal() {
-  const { messages, input, setInput, send, isLoading, error } = useChat('legal')
+  const { messages, input, setInput, send, isLoading, error, ready } = useChat('legal')
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [confirmExport, setConfirmExport] = useState(false)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -24,9 +27,9 @@ export function Legal() {
   return (
     <div className="text-on-background selection:bg-primary-container selection:text-on-primary-container">
       <Navbar quickExitIcon />
-      <div className="flex h-[calc(100dvh-4.5rem)] md:h-screen overflow-hidden pt-16">
+      <div className="flex h-[calc(100dvh-4.5rem)] lg:h-screen overflow-hidden pt-16 print:block print:h-auto print:overflow-visible print:pt-0">
         <Sidebar helpVariant="advocate" />
-        <main className="flex-1 lg:ml-64 flex flex-col relative h-full bg-background">
+        <main className="flex-1 lg:ml-64 flex flex-col relative h-full bg-background print:ml-0 print:h-auto">
           <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-container/20 blur-[120px] rounded-full pointer-events-none -z-10" />
           <div className="absolute bottom-10 left-10 w-1/4 h-1/4 bg-tertiary-container/20 blur-[100px] rounded-full pointer-events-none -z-10" />
 
@@ -39,14 +42,14 @@ export function Legal() {
             <h2 className="text-2xl md:text-4xl font-headline font-bold text-on-background leading-tight">
               Compass Guidance
             </h2>
-            <p className="text-on-surface-variant max-w-2xl text-sm md:text-lg">
+            <p className="hidden sm:block text-on-surface-variant max-w-2xl text-sm md:text-lg">
               Navigating legal rights can feel overwhelming. I'm here to provide clear steps and
               resources based on your situation.
             </p>
           </div>
 
           {/* Chat Container */}
-          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" data-lenis-prevent className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 space-y-6 md:space-y-8 hide-scrollbar">
+          <div ref={scrollRef} role="log" aria-live="polite" aria-label="Conversation" data-lenis-prevent className="flex-1 overflow-y-auto print:overflow-visible px-4 py-4 md:px-8 md:py-6 space-y-6 md:space-y-8 hide-scrollbar">
             {/* Disclaimer Box */}
             <div className="bg-surface-container-low p-5 rounded-2xl border-l-4 border-primary/30 max-w-3xl">
               <div className="flex gap-3">
@@ -80,7 +83,7 @@ export function Legal() {
                       <Icon name="person" className="text-on-secondary-fixed" />
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-primary text-on-primary p-5 rounded-2xl rounded-tr-none shadow-md shadow-primary/10 text-sm leading-relaxed">
+                      <div className="bg-primary text-on-primary p-5 rounded-2xl rounded-tr-none shadow-md shadow-primary/10 text-sm leading-relaxed whitespace-pre-wrap break-words">
                         {message.content}
                       </div>
                       <div className="text-[10px] text-on-surface-variant opacity-50 text-right mr-2">
@@ -97,7 +100,7 @@ export function Legal() {
                   </div>
                   <div className="space-y-4">
                     <div className="bg-surface-container-lowest p-6 rounded-2xl rounded-tl-none shadow-sm border border-outline-variant/10 text-on-surface leading-relaxed">
-                      {message.content}
+                      <MessageText text={message.content} />
                     </div>
                     <div className="text-[10px] text-on-surface-variant opacity-50 ml-2">
                       Compass
@@ -129,15 +132,15 @@ export function Legal() {
           )}
 
           {/* Input Area */}
-          <div className="p-3 md:p-8 md:pt-4">
+          <div className="p-3 md:p-8 md:pt-4 print:hidden">
             <div className="max-w-4xl mx-auto glass-panel p-2 pl-6 rounded-full shadow-lg flex items-center gap-2 border border-surface-container-highest">
               <label htmlFor="legal-input" className="sr-only">
                 Message
               </label>
               <input
                 id="legal-input"
-                className="flex-1 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-medium px-4"
-                placeholder="Ask Compass about your rights or legal steps..."
+                className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-on-surface placeholder:text-outline-variant font-medium px-4"
+                placeholder="Ask about your rights or next steps…"
                 type="text"
                 autoComplete="off"
                 value={input}
@@ -147,7 +150,7 @@ export function Legal() {
               <button
                 type="button"
                 onClick={send}
-                disabled={isLoading || !input.trim()}
+                disabled={!ready || isLoading || !input.trim()}
                 aria-label="Send message"
                 className="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all disabled:opacity-40"
               >
@@ -157,7 +160,7 @@ export function Legal() {
             <div className="mt-2 md:mt-4 flex flex-wrap justify-center gap-6">
               <button
                 type="button"
-                onClick={() => downloadConversation('legal', messages)}
+                onClick={() => setConfirmExport(true)}
                 disabled={messages.length === 0}
                 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 disabled:opacity-40 disabled:hover:text-on-surface-variant"
               >
@@ -178,6 +181,42 @@ export function Legal() {
         </main>
       </div>
       <BottomNav />
+      <Dialog
+        open={confirmExport}
+        onClose={() => setConfirmExport(false)}
+        title="Save a copy to this device?"
+        footer={
+          <div className="flex flex-wrap justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setConfirmExport(false)}
+              className="inline-flex min-h-11 items-center rounded-full px-5 text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                downloadConversation('legal', messages)
+                setConfirmExport(false)
+              }}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-on-primary"
+            >
+              <Icon name="download" className="text-lg" />
+              Save file
+            </button>
+          </div>
+        }
+      >
+        <p className="text-sm leading-relaxed text-on-surface-variant">
+          The conversation is saved as a text file in your Downloads folder, where anyone who uses
+          this device can open it. It's named with only a date, but its contents are readable.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-on-surface-variant">
+          If someone checks this device, save it somewhere only you can reach, or delete it after
+          use. Emptying the trash or recycle bin matters too.
+        </p>
+      </Dialog>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { navItems } from '@/components/layout/nav-items'
 import { Icon } from '@/components/shared/Icon'
 import { quickExit } from '@/features/quick-exit/quickExit'
 import { openTour } from '@/features/onboarding/tourStore'
+import { HOTLINE_TEL } from '@/lib/hotlines'
 
 interface MobileMenuProps {
   open: boolean
@@ -87,7 +88,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         </nav>
         <div className="mt-4 flex flex-col gap-3 border-t border-outline-variant/10 pt-4">
           <a
-            href="tel:988"
+            href={HOTLINE_TEL}
             className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 font-bold text-on-primary"
           >
             <Icon name="call" className="text-base" />

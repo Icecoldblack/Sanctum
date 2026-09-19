@@ -104,7 +104,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         // Best-effort: local state is already cleared regardless of server outcome.
       }
     }
-    setSession(createOfflineSession())
+    // Start a fresh server session so chat and SOS keep working without a reload.
+    try {
+      const created = await createSession()
+      localStorage.setItem(STORAGE_KEY, created.sessionId)
+      setSession({
+        sessionId: created.sessionId,
+        createdAt: created.createdAt,
+        expiresAt: created.expiresAt,
+        conversations: {},
+        isOffline: false,
+      })
+    } catch {
+      setSession(createOfflineSession())
+    }
   }, [session])
 
   const recordMessages = useCallback((variant: ChatVariant, messages: ChatMessage[]) => {

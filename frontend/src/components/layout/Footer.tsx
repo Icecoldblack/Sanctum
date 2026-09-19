@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { quickExit } from '@/features/quick-exit/quickExit'
 import { useSession } from '@/hooks/useSession'
+import { usePreferences } from '@/features/preferences/PreferencesContext'
+import { activeDisguise } from '@/features/preferences/preferences'
 
 interface FooterProps {
   onIncognitoTips?: () => void
@@ -8,6 +10,7 @@ interface FooterProps {
 
 export function Footer({ onIncognitoTips }: FooterProps) {
   const { clearData } = useSession()
+  const { name } = activeDisguise(usePreferences().prefs)
 
   async function handleErase() {
     await clearData()
@@ -17,7 +20,7 @@ export function Footer({ onIncognitoTips }: FooterProps) {
     <footer className="bg-surface-container text-on-surface-variant py-12 px-6">
       <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
         <div className="max-w-sm">
-          <div className="text-2xl font-bold tracking-tighter text-[#4c6557] mb-4">Sanctum</div>
+          <div className="text-2xl font-bold tracking-tighter text-[#4c6557] mb-4">{name}</div>
           <p className="text-sm leading-relaxed">
             Designed with care for women who feel unsafe and can't simply leave, by survivors and
             experts. We believe technology should protect, not track.
@@ -81,7 +84,7 @@ export function Footer({ onIncognitoTips }: FooterProps) {
         </div>
       </div>
       <div className="max-w-screen-xl mx-auto mt-16 pt-8 border-t border-outline-variant/10 text-xs flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <span>© {new Date().getFullYear()} Sanctum Foundation. Private and secure.</span>
+        <span>© {new Date().getFullYear()} {name}. Private and secure.</span>
         <div className="flex gap-6">
           <Link className="hover:text-primary" to="/privacy">
             Privacy
