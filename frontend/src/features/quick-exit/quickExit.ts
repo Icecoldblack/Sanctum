@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/api/baseUrl'
 import { loadPreferences } from '@/features/preferences/preferences'
 import { resolveExitUrl } from '@/features/quick-exit/destinations'
 
@@ -135,7 +136,7 @@ export function quickExit() {
 }
 
 function eraseServerSession(sessionId: string) {
-  const url = `${import.meta.env.VITE_API_BASE_URL ?? ''}/api/sessions/${encodeURIComponent(sessionId)}/erase`
+  const url = `${API_BASE_URL}/api/sessions/${encodeURIComponent(sessionId)}/erase`
   try {
     if (navigator.sendBeacon?.(url)) return
   } catch {

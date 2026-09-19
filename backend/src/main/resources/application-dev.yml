@@ -7,7 +7,3 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/sanctum}
     username: ${DATABASE_USER:sanctum}
     password: ${DATABASE_PASSWORD:sanctum}
-
-sanctum:
-  cors:
-    allowed-origins: http://localhost:5173

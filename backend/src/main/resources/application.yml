@@ -84,7 +84,8 @@ sanctum:
     max-pixels: 20000000
     max-dimension: 8192
   cors:
-    allowed-origins: http://localhost:5173
+    # Comma-separated frontend origins. Required in the prod profile, which has no default.
+    allowed-origins: ${SANCTUM_ALLOWED_ORIGIN:http://localhost:5173}
   crisis:
     # Configurable per deployment region. Defaults are United States resources.
     resources:

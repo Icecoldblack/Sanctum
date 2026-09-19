@@ -252,14 +252,17 @@ docker build -t sanctum-backend .
 ```
 
 Produces a distroless, non-root image running the `prod` profile. Required environment:
-`DATABASE_URL`, `DATABASE_USER`, `DATABASE_PASSWORD`, `SANCTUM_ENCRYPTION_KEY`, `GEMINI_API_KEY`,
-`SANCTUM_ALLOWED_ORIGIN`.
+`DATABASE_URL` (JDBC form, `jdbc:postgresql://…`), `DATABASE_USER`, `DATABASE_PASSWORD`,
+`SANCTUM_ENCRYPTION_KEY`, `GEMINI_API_KEY`, and `SANCTUM_ALLOWED_ORIGIN` (the frontend's origin;
+comma-separate several). The server listens on `PORT` when the host sets one, otherwise 8080.
 
 Run it behind TLS. The `prod` profile trusts `X-Forwarded-*` headers, so the reverse proxy must set
 them.
 
 The frontend builds to static files (`npm run build` → `dist/`) and can be served from any static
-host or CDN.
+host or CDN. Set `VITE_API_BASE_URL` to the backend's URL before building: it is baked into the
+bundle, and a production build fails without it. `frontend/vercel.json` routes every path to
+`index.html`, which client-side routes and the quick exit's decoy page need.
 
 ---
 
