@@ -1,12 +1,13 @@
 import { Modal } from '@/components/shared/Modal'
 import { Icon } from '@/components/shared/Icon'
+import { useHasFinePointer } from '@/hooks/usePlatform'
 
 interface IncognitoTipsProps {
   open: boolean
   onClose: () => void
 }
 
-const tips = [
+const desktopTips = [
   {
     icon: 'tab',
     title: 'Use a private window',
@@ -34,7 +35,23 @@ const tips = [
   },
 ]
 
+/** Phones and tablets: no keyboard shortcuts, so the first two tips say what to tap instead. */
+const touchTips = [
+  {
+    icon: 'tab',
+    title: 'Use a private tab',
+    body: 'In Chrome, Safari, or Samsung Internet, open a new private (Incognito) tab from the tabs menu. Nothing you visit is written to history.',
+  },
+  {
+    icon: 'logout',
+    title: 'Tap Quick Exit to leave',
+    body: 'Anywhere in Sanctum, the Quick Exit button leaves for an everyday site and erases your chats.',
+  },
+  ...desktopTips.slice(2),
+]
+
 export function IncognitoTips({ open, onClose }: IncognitoTipsProps) {
+  const tips = useHasFinePointer() ? desktopTips : touchTips
   return (
     <Modal open={open} onClose={onClose} title="Browsing safely">
       <ul className="space-y-5">

@@ -5,6 +5,7 @@ import { BottomNav } from '@/components/layout/BottomNav'
 import { Icon } from '@/components/shared/Icon'
 import { Switch } from '@/components/shared/Switch'
 import { useSession } from '@/hooks/useSession'
+import { useHasFinePointer } from '@/hooks/usePlatform'
 import { usePreferences } from '@/features/preferences/PreferencesContext'
 import { ShortcutRecorder } from '@/features/quick-exit/ShortcutRecorder'
 import { ExitDestinationPicker } from '@/features/quick-exit/ExitDestinationPicker'
@@ -16,6 +17,7 @@ import { openTour } from '@/features/onboarding/tourStore'
 export function Settings() {
   const { prefs, update } = usePreferences()
   const { clearData } = useSession()
+  const finePointer = useHasFinePointer()
   const [editing, setEditing] = useState(false)
   const [erased, setErased] = useState(false)
 
@@ -56,14 +58,19 @@ export function Settings() {
 
           <div className="space-y-6">
             <Section id="quick-exit" icon="logout" title="Quick exit" description="Leave instantly if someone comes in.">
-              <div>
-                <p className="font-semibold text-on-surface">Keyboard shortcut</p>
-                <p className="mb-3 mt-1 text-sm text-on-surface-variant">
-                  Works on every page, even while you're typing. It's also shown next to the Quick Exit button.
-                </p>
-                <ShortcutRecorder />
-              </div>
-              <Divider />
+              {/* Phones and tablets have no keyboard to press it on; they use the Quick Exit button. */}
+              {finePointer && (
+                <>
+                  <div>
+                    <p className="font-semibold text-on-surface">Keyboard shortcut</p>
+                    <p className="mb-3 mt-1 text-sm text-on-surface-variant">
+                      Works on every page, even while you're typing. It's also shown next to the Quick Exit button.
+                    </p>
+                    <ShortcutRecorder />
+                  </div>
+                  <Divider />
+                </>
+              )}
               <ExitDestinationPicker />
               <Divider />
               <Switch
